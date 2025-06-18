@@ -1,7 +1,6 @@
 package com.backend.hrms.entity;
 
-import javax.management.relation.Role;
-
+import com.backend.hrms.constants.enums.Role;
 import com.backend.hrms.entity.base.BaseEntity;
 
 import jakarta.persistence.CascadeType;

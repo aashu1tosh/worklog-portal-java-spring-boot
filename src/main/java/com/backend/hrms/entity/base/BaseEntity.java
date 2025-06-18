@@ -26,7 +26,7 @@ public abstract class BaseEntity {
     private UUID id;
 
     @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private String createdAt;
 
     @LastModifiedDate

@@ -1,5 +1,5 @@
 runDev:
-	mvn spring-boot:run
+	mvn clean spring-boot:run -e
 
 seedSudoAdmin:
-	mvn spring-boot:run -Dspring-boot.run.main-class=com.backend.hrms.SeederApplication
+	mvn clean spring-boot:run -e -Dspring-boot.run.profiles=seed

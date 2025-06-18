@@ -3,6 +3,7 @@ package com.backend.hrms;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.backend.hrms.constants.enums.Role;
@@ -12,6 +13,7 @@ import com.backend.hrms.repository.AdminRepository;
 import com.backend.hrms.repository.AuthRepository;
 
 @SpringBootApplication
+@Profile("seed")
 public class SeederApplication implements CommandLineRunner {
 
     private final AdminRepository adminRepository;

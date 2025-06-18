@@ -1,6 +1,7 @@
 package com.backend.hrms.repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -43,6 +44,6 @@ public interface AuthRepository extends JpaRepository<AuthEntity, Long> {
     /**
      * Check if email exists excluding current user (for profile updates)
      */
-    boolean existsByEmailAndIdNot(String email, Long id);
+    boolean existsByEmailAndIdNot(String email, UUID id);
     
 }

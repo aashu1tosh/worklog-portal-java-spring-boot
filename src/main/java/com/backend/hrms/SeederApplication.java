@@ -3,6 +3,7 @@ package com.backend.hrms;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -19,13 +20,16 @@ public class SeederApplication implements CommandLineRunner {
     private final AdminRepository adminRepository;
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ApplicationContext context;
     
     public SeederApplication(AdminRepository adminRepository, 
                            AuthRepository authRepository,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           ApplicationContext context) {
         this.adminRepository = adminRepository;
         this.authRepository = authRepository;
         this.passwordEncoder = passwordEncoder;
+        this.context = context;
     }
     
     public static void main(String[] args) {
@@ -34,7 +38,17 @@ public class SeederApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        seedSudoAdmin();
+        try {
+            seedSudoAdmin();
+            System.out.println("🎉 Seeding completed successfully!");
+        } catch (Exception e) {
+            System.err.println("❌ Error during seeding: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // Exit the application after seeding
+            System.out.println("🔚 Shutting down application...");
+            SpringApplication.exit(context, () -> 0);
+        }
     }
 
     private void seedSudoAdmin() {

@@ -18,7 +18,6 @@ public class SeederApplication implements CommandLineRunner {
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
     
-    // Constructor-based Dependency Injection
     public SeederApplication(AdminRepository adminRepository, 
                            AuthRepository authRepository,
                            PasswordEncoder passwordEncoder) {
@@ -41,6 +40,7 @@ public class SeederApplication implements CommandLineRunner {
         String sudoAdminEmail = "sudo@admin.com";
         
         if (authRepository.findByEmail(sudoAdminEmail).isEmpty()) {
+            System.out.println("🔄 Seeding SUDO ADMIN...");
             // Create Admin Entity first
             AdminEntity adminEntity = new AdminEntity();
             adminEntity.setFullName("Super Admin");

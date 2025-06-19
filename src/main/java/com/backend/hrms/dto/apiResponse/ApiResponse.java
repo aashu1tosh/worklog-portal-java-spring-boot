@@ -1,4 +1,4 @@
-package com.backend.hrms.dto.ApiResponse;
+package com.backend.hrms.dto.apiResponse;
 
 public class ApiResponse<T> {
     private boolean success;

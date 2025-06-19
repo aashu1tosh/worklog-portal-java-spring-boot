@@ -45,7 +45,7 @@ public class AuthController {
                 .secure(cookieSecure)
                 .sameSite("Lax")
                 .path("/") // cookie is valid for entire domain
-                .maxAge(Duration.ofMinutes(15))
+                .maxAge(Duration.ofDays(7))
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie

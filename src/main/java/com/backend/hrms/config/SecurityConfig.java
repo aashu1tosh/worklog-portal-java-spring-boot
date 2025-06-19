@@ -26,10 +26,11 @@ public class SecurityConfig {
                 /* --- basics -------------------------------------------------- */
                 .csrf(csrf -> csrf.disable()) // stateless API → CSRF not needed
                 // .sessionManagement(sm -> sm
-                //         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 /* --- authorization rules ------------------------------------ */
                 .authorizeHttpRequests(auth -> auth
+                        // .requestMatchers("/**/public/**", "/error", "/api/v1/error").permitAll()
                         .requestMatchers(publicEndpoints).permitAll() // open
                         .anyRequest().authenticated()) // everything else protected
 

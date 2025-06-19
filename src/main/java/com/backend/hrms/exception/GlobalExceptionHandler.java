@@ -8,6 +8,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.backend.hrms.dto.ApiResponse.ApiResponse;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -20,5 +22,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(
                 Map.of("success", false, "message", "Validation Failed", "errors", errors));
+    }
+
+    @ExceptionHandler(HttpException.class)
+    public ResponseEntity<ApiResponse<Void>> handleHttpException(HttpException ex) {
+
+        ApiResponse<Void> body = new ApiResponse<>(false, ex.getMessage(), null);
+
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(body);
     }
 }

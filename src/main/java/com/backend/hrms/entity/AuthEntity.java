@@ -46,7 +46,7 @@ public class AuthEntity extends BaseEntity {
     @Column(nullable = false)
     private Role role;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     @JoinColumn(name = "admin_id", nullable = true)
     private AdminEntity admin;
 }

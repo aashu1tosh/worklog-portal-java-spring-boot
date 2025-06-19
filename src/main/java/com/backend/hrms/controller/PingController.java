@@ -8,7 +8,7 @@ import com.backend.hrms.dto.ApiResponse.ApiResponse;
 @RestController
 public class PingController {
 
-    @GetMapping("/ping")
+    @GetMapping("/public/ping")
     public ApiResponse<String> ping() {
         return new ApiResponse<>(true, "Ping successful", "");
     }

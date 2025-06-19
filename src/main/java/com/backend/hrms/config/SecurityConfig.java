@@ -25,20 +25,11 @@ public class SecurityConfig {
         return http
                 /* --- basics -------------------------------------------------- */
                 .csrf(csrf -> csrf.disable()) // stateless API → CSRF not needed
-                // .sessionManagement(sm -> sm
-                // .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 /* --- authorization rules ------------------------------------ */
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(publicEndpoints).permitAll() // open
-                        .anyRequest().authenticated()) // everything else protected
-
-                /*
-                 * --- (optional) extra filters --------------------------------
-                 * .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                 * ------------------------------------------------------------
-                 */
-
+                        .requestMatchers(publicEndpoints).permitAll()
+                        .anyRequest().authenticated())
                 .build();
     }
 }

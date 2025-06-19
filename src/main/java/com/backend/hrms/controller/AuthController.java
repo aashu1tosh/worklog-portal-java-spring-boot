@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.hrms.dto.AuthDTO;
 import com.backend.hrms.dto.ApiResponse.ApiResponse;
-import com.backend.hrms.exception.HttpException;
+import com.backend.hrms.service.AuthService;
 
 import jakarta.validation.Valid;
 
@@ -17,15 +17,15 @@ import jakarta.validation.Valid;
 @RequestMapping("/auth")
 public class AuthController {
 
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
     @PostMapping("/public/login")
     public ApiResponse<String> login(@Valid @RequestBody AuthDTO.LoginDTO body) {
-        System.out.println("Login endpoint hit " + body.getEmail() + " " + body.getPassword());
-        // apasj@dfkljask.lfda
-        if("apasj@dfkljask.lfda".equals(body.getEmail())) {
-            System.out.println("Valid email format");
-            throw HttpException.badRequest("Invalid email format");
-        }
-            
+        authService.login(body);
         return new ApiResponse<String>(true, "Login endpoint is not implemented yet.", "");
     }
 

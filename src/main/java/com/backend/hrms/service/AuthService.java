@@ -41,18 +41,12 @@ public class AuthService {
 
             newAccess = jwtService.generateAccessToken(check.get(), Map.of(
                     "id", check.get().getId(),
-                    "role", check.get().getRole()
-            ));
-            // String newRefresh = jwtService.generateRefreshToken(check.get());
-
-
-            System.out.println("New access token generated for email: " + newAccess);
+                    "role", check.get().getRole()));
         } else
             throw HttpException.badRequest("Invalid Credentials");
 
         return Map.of(
-            "access", newAccess,
-            "refresh", newAccess
-        );
+                "access", newAccess,
+                "refresh", newAccess);
     }
 }

@@ -30,7 +30,6 @@ public class SecurityConfig {
 
                 /* --- authorization rules ------------------------------------ */
                 .authorizeHttpRequests(auth -> auth
-                        // .requestMatchers("/**/public/**", "/error", "/api/v1/error").permitAll()
                         .requestMatchers(publicEndpoints).permitAll() // open
                         .anyRequest().authenticated()) // everything else protected
 

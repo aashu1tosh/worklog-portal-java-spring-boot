@@ -34,10 +34,10 @@ public class SecurityConfig {
 
                 /* --- authorization rules ------------------------------------ */
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/error/**", "/error**").permitAll() // allow error handling
                         .requestMatchers(publicEndpoints).permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtAuthFilter,
-                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }

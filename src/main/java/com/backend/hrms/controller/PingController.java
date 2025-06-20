@@ -12,4 +12,10 @@ public class PingController {
     public ApiResponse<String> ping() {
         return new ApiResponse<>(true, "Ping successful", "");
     }
+
+    @GetMapping("/public/health")
+    public ApiResponse<String> health() {
+        throw new NullPointerException("Simulated server error for testing purposes");
+        // return new ApiResponse<>(true, "Health check successful", "");  
+    }
 }

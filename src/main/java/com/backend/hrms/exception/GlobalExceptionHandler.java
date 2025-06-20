@@ -6,6 +6,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -37,6 +39,23 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(ex.getStatus())
+                .body(body);
+    }
+
+        @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ex) {
+        // You can customize the message here
+        ApiResponse<Void> body = new ApiResponse<>(false, "Access Denied: You do not have permission to access this resource.", null);
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN) // Use 403 Forbidden for access denied
+                .body(body);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(AuthenticationException ex) {
+        ApiResponse<Void> body = new ApiResponse<>(false, "Authentication Required: Please provide valid credentials.", null);
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED) // Use 401 Unauthorized
                 .body(body);
     }
 

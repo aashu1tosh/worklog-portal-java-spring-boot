@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -94,7 +95,7 @@ public class CompanyController {
     }
 
     @GetMapping("/{id}") // Correct way to define a path variable
-    public ApiResponse<Object> getById(
+    public ApiResponse<CompanyDTO.Response> getById(
             @AuthenticationPrincipal JwtPayload jwt,
             @PathVariable UUID id) {
 
@@ -102,7 +103,18 @@ public class CompanyController {
 
         CompanyDTO.Response companyResponse = CompanyDTO.Response.fromEntity(companyEntity);
 
-        return new ApiResponse<>(true, Messages.SUCCESS, companyResponse);
+        return new ApiResponse<CompanyDTO.Response>(true, Messages.SUCCESS, companyResponse);
+    }
+
+    @PatchMapping("/{id}")
+    public ApiResponse<String> updateCompany(
+            @AuthenticationPrincipal JwtPayload jwt,
+            @PathVariable UUID id,
+            @Valid @RequestBody CompanyDTO.Update body) {
+
+        companyService.update(id, body);
+
+        return new ApiResponse<>(true, Messages.UPDATED, "");
     }
 
 }

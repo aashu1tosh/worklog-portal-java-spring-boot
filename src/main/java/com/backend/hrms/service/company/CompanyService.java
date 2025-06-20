@@ -55,4 +55,33 @@ public class CompanyService {
         return this.companyRepository.findById(id)
                 .orElseThrow(() -> HttpException.notFound("Company not found"));
     }
+
+    public void update(UUID id, CompanyDTO.Update data) {
+        System.out.println("Updating company with ID: " + id);
+
+        CompanyEntity company = this.getById(id);
+
+        if (data.getName() != null && !data.getName().isBlank()) {
+            company.setName(data.getName());
+        }
+
+        if (data.getAddress() != null && !data.getAddress().isBlank()) {
+            company.setAddress(data.getAddress());
+        }
+
+        if (data.getEmail() != null && !data.getEmail().isBlank()) {
+            if (this.companyRepository.findByEmail(data.getEmail()).isPresent())
+                throw HttpException.badRequest("Company with this email already exists");
+            company.setEmail(data.getEmail());
+        }
+
+        if (data.getPhone() != null && !data.getPhone().isBlank()) {
+            if (this.companyRepository.findByPhone(data.getPhone()).isPresent())
+                throw HttpException.badRequest("Company with this phone number already exists");
+            company.setPhone(data.getPhone());
+        }
+
+        this.companyRepository.save(company);
+        return;
+    }
 }

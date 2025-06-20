@@ -40,6 +40,22 @@ public class CompanyDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @SuperBuilder
+    public static class Update {
+
+        private String name;
+        private String address;
+
+        @Email(message = "Must be a valid e‑mail address")
+        private String email;
+
+        private String phone;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @SuperBuilder
     public static class Response extends BaseResponse {
         private String name;
         private String address;

@@ -13,22 +13,26 @@ import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.company.CompanyDTO;
 import com.backend.hrms.helpers.Messages;
 import com.backend.hrms.security.jwt.JwtPayload;
+import com.backend.hrms.service.company.CompanyService;
 
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/company")
 public class CompanyController {
+    private final CompanyService companyService;
+
+    public CompanyController(CompanyService companyService) {
+        this.companyService = companyService;
+    }
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN')")
     public ApiResponse<String> createCompany(@Valid @RequestBody CompanyDTO.Create body,
             @AuthenticationPrincipal JwtPayload jwt1) {
-
-
-        System.out.println("JWT Payload inside " + jwt1);
-
+        System.out.println("Creating company with name: " + body.getName() + " by user: ");
+        companyService.create(body);
         return new ApiResponse<>(true, Messages.CREATED, "");
     }
 }

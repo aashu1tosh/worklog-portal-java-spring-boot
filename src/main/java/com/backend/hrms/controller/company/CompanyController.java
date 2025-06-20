@@ -1,6 +1,7 @@
 package com.backend.hrms.controller.company;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,7 +48,7 @@ public class CompanyController {
     }
 
     @GetMapping()
-    public ApiResponse<Object> getCompany(
+    public ApiResponse<Object> get(
             @AuthenticationPrincipal JwtPayload jwt,
             @PageableDefault(size = 10) Pageable pageable,
             @RequestParam(name = "search", defaultValue = "") String search) {
@@ -66,6 +68,41 @@ public class CompanyController {
                         data.getTotalPages()));
 
         return new ApiResponse<>(true, Messages.SUCCESS, paginatedResponse);
+    }
+
+    @GetMapping("/:id")
+    public ApiResponse<Object> getById(
+            @AuthenticationPrincipal JwtPayload jwt,
+            @PageableDefault(size = 10) Pageable pageable,
+            @RequestParam(name = "search", defaultValue = "") String search) {
+
+        Page<CompanyEntity> data = companyService.get(pageable, search);
+
+        List<CompanyDTO.Response> company = data.getContent().stream()
+                .map(CompanyDTO.Response::fromEntity)
+                .toList();
+
+        PaginatedResponse<CompanyDTO.Response> paginatedResponse = new PaginatedResponse<>(
+                company,
+                new PaginatedResponse.Pagination(
+                        data.getNumber() + 1,
+                        data.getSize(),
+                        data.getTotalElements(),
+                        data.getTotalPages()));
+
+        return new ApiResponse<>(true, Messages.SUCCESS, paginatedResponse);
+    }
+
+    @GetMapping("/{id}") // Correct way to define a path variable
+    public ApiResponse<Object> getById(
+            @AuthenticationPrincipal JwtPayload jwt,
+            @PathVariable UUID id) {
+
+        CompanyEntity companyEntity = companyService.getById(id);
+
+        CompanyDTO.Response companyResponse = CompanyDTO.Response.fromEntity(companyEntity);
+
+        return new ApiResponse<>(true, Messages.SUCCESS, companyResponse);
     }
 
 }

@@ -1,5 +1,7 @@
 package com.backend.hrms.service.company;
 
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -47,5 +49,10 @@ public class CompanyService {
         System.out.println("Fetching company with search: " + search);
         Page<CompanyEntity> companies = this.companyRepository.findAll(pageable, search);
         return companies;
+    }
+
+    public CompanyEntity getById(UUID id) {
+        return this.companyRepository.findById(id)
+                .orElseThrow(() -> HttpException.notFound("Company not found"));
     }
 }

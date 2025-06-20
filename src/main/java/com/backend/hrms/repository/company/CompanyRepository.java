@@ -15,25 +15,27 @@ import com.backend.hrms.entity.company.CompanyEntity;
 @Repository
 public interface CompanyRepository extends JpaRepository<CompanyEntity, UUID> {
 
-    Optional<CompanyEntity> findByName(String name);
+        Optional<CompanyEntity> findByName(String name);
 
-    Optional<CompanyEntity> findByEmail(String email);
+        Optional<CompanyEntity> findByEmail(String email);
 
-    Optional<CompanyEntity> findByPhone(String phone);
+        Optional<CompanyEntity> findByPhone(String phone);
 
-    @Query(value = """
-            SELECT *
-            FROM   company_entity c
-            WHERE  (:search = ''
-                    OR :search IS NULL
-                    OR c.company_name ILIKE '%' || :search || '%')
-            """, countQuery = """
-            SELECT COUNT(*)
-            FROM   company_entity c
-            WHERE  (:search = ''
-                    OR :search IS NULL
-                    OR c.company_name ILIKE '%' || :search || '%')
-            """, nativeQuery = true)
-    Page<CompanyEntity> findAll(Pageable pageable, @Param("search") String search);
+        @Query(value = """
+                        SELECT *
+                        FROM   company_entity c
+                        WHERE  (:search = ''
+                                OR :search IS NULL
+                                OR c.company_name ILIKE '%' || :search || '%')
+                        """, countQuery = """
+                        SELECT COUNT(*)
+                        FROM   company_entity c
+                        WHERE  (:search = ''
+                                OR :search IS NULL
+                                OR c.company_name ILIKE '%' || :search || '%')
+                        """, nativeQuery = true)
+        Page<CompanyEntity> findAll(Pageable pageable, @Param("search") String search);
+
+        // Optional<CompanyEntity> findById(UUID id);
 
 }

@@ -1,9 +1,10 @@
 package com.backend.hrms.service.company;
 
-import org.hibernate.query.Page;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Pageable;
+
 import com.backend.hrms.dto.company.CompanyDTO;
 import com.backend.hrms.entity.company.CompanyEntity;
 import com.backend.hrms.exception.HttpException;
@@ -42,8 +43,9 @@ public class CompanyService {
         return;
     }
 
-    public void get(Pageable pageable, String search) {
+    public Page<CompanyEntity> get(Pageable pageable, String search) {
         System.out.println("Fetching company with search: " + search);
-        Page<CompanyEntity> companies = this.companyRepository.findAll(pageable);
+        Page<CompanyEntity> companies = this.companyRepository.findAll(pageable, search);
+        return companies;
     }
 }

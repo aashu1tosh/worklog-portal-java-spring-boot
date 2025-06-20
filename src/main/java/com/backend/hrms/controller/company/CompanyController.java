@@ -1,5 +1,8 @@
 package com.backend.hrms.controller.company;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.company.CompanyDTO;
+import com.backend.hrms.dto.paginatedResponse.PaginatedResponse;
+import com.backend.hrms.entity.company.CompanyEntity;
 import com.backend.hrms.helpers.Messages;
 import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.service.company.CompanyService;
@@ -41,12 +46,26 @@ public class CompanyController {
     }
 
     @GetMapping()
-    public ApiResponse<String> getCompany(
+    public ApiResponse<Object> getCompany(
             @AuthenticationPrincipal JwtPayload jwt,
-            @PageableDefault(page = 1, size = 10) Pageable pageable,
+            @PageableDefault(size = 10) Pageable pageable,
             @RequestParam(name = "search", defaultValue = "") String search) {
 
-        companyService.get(pageable, search);
-        return new ApiResponse<>(true, Messages.SUCCESS, "");
+        Page<CompanyEntity> data = companyService.get(pageable, search);
+
+        List<CompanyDTO.Response> company = data.getContent().stream()
+                .map(CompanyDTO.Response::fromEntity)
+                .toList();
+
+        PaginatedResponse<CompanyDTO.Response> paginatedResponse = new PaginatedResponse<>(
+                company,
+                new PaginatedResponse.Pagination(
+                        data.getNumber() + 1,
+                        data.getSize(),
+                        data.getTotalElements(),
+                        data.getTotalPages()));
+
+        return new ApiResponse<>(true, Messages.SUCCESS, paginatedResponse);
     }
+
 }

@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.hrms.dto.company.CompanyDTO;
 import com.backend.hrms.entity.company.CompanyEntity;
+import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.repository.company.CompanyRepository;
 
 @Service
@@ -22,6 +23,13 @@ public class CompanyService {
 
     public void create(CompanyDTO.Create data) {
         System.out.println("Creating company with name: " + data.getName());
+
+        if(this.companyRepository.findByEmail(data.getEmail()).isPresent())
+            throw HttpException.badRequest("Company with this email already exists");
+
+        if(this.companyRepository.findByPhone(data.getPhone()).isPresent())
+            throw HttpException.badRequest("Company with this phone number already exists");
+        
         CompanyEntity company = new CompanyEntity();
 
         company.setName(data.getName());
@@ -31,5 +39,9 @@ public class CompanyService {
 
         this.companyRepository.save(company);
         return;
+    }
+
+    public CompanyEntity get() {
+        //
     }
 }

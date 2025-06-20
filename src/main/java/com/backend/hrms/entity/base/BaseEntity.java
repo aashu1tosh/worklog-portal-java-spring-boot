@@ -1,5 +1,6 @@
 package com.backend.hrms.entity.base;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -27,11 +28,11 @@ public abstract class BaseEntity {
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
-    private String createdAt;
+    private Instant createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at")
-    private String updatedAt;
+    private Instant updatedAt;
 
     @Column(name = "deleted_at")
     private String deletedAt;

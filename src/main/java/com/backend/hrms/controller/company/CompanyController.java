@@ -1,5 +1,7 @@
 package com.backend.hrms.controller.company;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,16 +35,18 @@ public class CompanyController {
     @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN')")
     public ApiResponse<String> createCompany(@Valid @RequestBody CompanyDTO.Create body,
             @AuthenticationPrincipal JwtPayload jwt1) {
-        
+
         companyService.create(body);
         return new ApiResponse<>(true, Messages.CREATED, "");
     }
 
     @GetMapping()
     public ApiResponse<String> getCompany(
-            @AuthenticationPrincipal JwtPayload jwt) {
-        
-        
+            @AuthenticationPrincipal JwtPayload jwt,
+            @PageableDefault(page = 1, size = 10) Pageable pageable,
+            @RequestParam(name = "search", defaultValue = "") String search) {
+
+        companyService.get(pageable, search);
         return new ApiResponse<>(true, Messages.SUCCESS, "");
     }
 }

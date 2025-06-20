@@ -1,17 +1,21 @@
 package com.backend.hrms.security.jwt;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Map;
 
-@Setter
-@Getter
-public class JwtPayload {
-    private String id;
-    private String role;
+import io.jsonwebtoken.Claims;
 
-    // Constructor
-    public JwtPayload(String id, String role) {
-        this.id = id;
-        this.role = role;
+public record JwtPayload(
+        String id,
+        String role,
+        Map<String, Object> claims // keep the raw claims if you like
+) {
+
+    /** Build a JwtPayload from the JWT claims object. */
+    public static JwtPayload from(Claims c) {
+        // adapt the claim names to whatever you put in the token
+        String id = c.get("id", String.class);
+        String role = c.get("role", String.class);
+
+        return new JwtPayload(id, role, c);
     }
 }

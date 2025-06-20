@@ -2,9 +2,7 @@ package com.backend.hrms.controller.company;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,15 +22,12 @@ public class CompanyController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyAuthority('SUDO_ADMIN', 'ADMIN')") 
+    @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN')")
     public ApiResponse<String> createCompany(@Valid @RequestBody CompanyDTO.Create body,
             @AuthenticationPrincipal JwtPayload jwt1) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        String userId = (String) auth.getPrincipal();
 
-        System.out.println("User ID: " + userId);
-        
+        System.out.println("JWT Payload inside " + jwt1);
 
         return new ApiResponse<>(true, Messages.CREATED, "");
     }

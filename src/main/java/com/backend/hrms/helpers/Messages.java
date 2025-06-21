@@ -18,5 +18,7 @@ public final class Messages {
     public static final String NOT_FOUND = "Resource not found";
     public static final String FORBIDDEN = "Access forbidden";
     public static final String INTERNAL_ERROR = "Internal server error";
+    public static final String BAD_REQUEST = "Bad request";
+    public static final String UNAUTHORIZED = "Unauthorized access";
 
 }

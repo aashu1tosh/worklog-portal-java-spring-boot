@@ -7,7 +7,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
@@ -26,11 +25,9 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwt;
-    private final UserDetailsService users;
 
-    public JwtAuthenticationFilter(JwtService jwt, UserDetailsService users) {
+    public JwtAuthenticationFilter(JwtService jwt) {
         this.jwt = jwt;
-        this.users = users;
     }
 
     @Override
@@ -38,11 +35,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse res,
             FilterChain chain) throws IOException, ServletException, HttpException {
 
-        String token = resolveAccessToken(req); // <─ get it from header or cookie
+        String token = resolveAccessToken(req);
         if (token != null) {
             try {
                 Claims claims = jwt.parseAccessToken(token);
-                System.out.println(claims + "check this");
 
                 /* ---- 1. Extract what you need from the token ------------------ */
                 JwtPayload payload = JwtPayload.from(claims); // helper you write

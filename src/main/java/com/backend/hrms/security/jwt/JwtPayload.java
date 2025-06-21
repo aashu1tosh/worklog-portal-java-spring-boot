@@ -5,6 +5,7 @@ import java.util.Map;
 import io.jsonwebtoken.Claims;
 
 public record JwtPayload(
+        String key,
         String id,
         String role,
         Map<String, Object> claims // keep the raw claims if you like
@@ -15,7 +16,8 @@ public record JwtPayload(
         // adapt the claim names to whatever you put in the token
         String id = c.get("id", String.class);
         String role = c.get("role", String.class);
+        String key = c.get("key", String.class);
 
-        return new JwtPayload(id, role, c);
+        return new JwtPayload(key, id, role, c);
     }
 }

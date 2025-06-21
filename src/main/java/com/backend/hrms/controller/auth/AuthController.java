@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.WebUtils;
 
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.auth.AuthDTO;
@@ -24,6 +26,7 @@ import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
 import com.backend.hrms.helpers.auth.DeviceDetector;
 import com.backend.hrms.helpers.auth.GetClientsIp;
+import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.security.jwt.JwtService;
 import com.backend.hrms.service.auth.AuthService;
 import com.backend.hrms.service.auth.LoginLogService;
@@ -76,12 +79,6 @@ public class AuthController {
         DeviceDetector.DeviceInfo deviceInfo = DeviceDetector.detectDevice(request);
         String clientIp = GetClientsIp.getClientIp(request);
 
-        System.out.println("Client IP: " + clientIp);
-        System.out.println("Device Type: " + deviceInfo.getDeviceType());
-        System.out.println("OS: " + deviceInfo.getOs());
-        System.out.println("Browser: " + deviceInfo.getBrowser());
-
-        // Save login log
         LoginLogDTO.Request loginLogRequestDto = LoginLogDTO.Request.builder()
                 .clientIp(clientIp)
                 .deviceType(deviceInfo.getDeviceType().toString())
@@ -145,8 +142,21 @@ public class AuthController {
         return new ApiResponse<String>(true, "Register endpoint is not implemented yet.", "");
     }
 
-    @PostMapping("/public/logout")
-    public ApiResponse<String> logout(HttpServletResponse response) {
+    @PostMapping("/logout")
+    public ApiResponse<String> logout(@AuthenticationPrincipal JwtPayload jwt, HttpServletResponse response) {
+
+        UUID userKey = null;
+
+        System.out.println("JWT Payload: " + jwt);
+        if (jwt != null) {
+            userKey = UUID.fromString(jwt.key());
+        } else
+            throw HttpException.unauthorized(Messages.UNAUTHORIZED);
+
+        // Here you would typically invalidate the session or token
+        loginLogService.updateLogoutTime(userKey);
+
+        // String token = resolveRefreshToken(request);
         ResponseCookie accessCookie = ResponseCookie
                 .from("accessToken", "")
                 .httpOnly(true)
@@ -198,5 +208,10 @@ public class AuthController {
 
         // Map<String, String> tokens = authService.refreshToken();
         return new ApiResponse<String>(true, Messages.TOKEN_REFRESH, "");
+    }
+
+    private String resolveRefreshToken(HttpServletRequest req) {
+        Cookie jwtCookie = WebUtils.getCookie(req, "refreshToken");
+        return (jwtCookie != null) ? jwtCookie.getValue() : null;
     }
 }

@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.hrms.dto.AuthDTO;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
+import com.backend.hrms.entity.AuthEntity;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
+import com.backend.hrms.security.jwt.JwtService;
 import com.backend.hrms.service.AuthService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,18 +33,34 @@ public class AuthController {
     private String envName;
 
     private final AuthService authService;
+    private final JwtService jwtService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, JwtService jwtService) {
         this.authService = authService;
+        this.jwtService = jwtService;
+
     }
 
     @PostMapping("/public/login")
     public ApiResponse<String> login(@Valid @RequestBody AuthDTO.LoginDTO body, HttpServletResponse response) {
-        Map<String, String> tokens = authService.login(body);
+        AuthEntity authEntity = authService.login(body);
+
+        if (authEntity == null) {
+            throw HttpException.badRequest(Messages.INVALID_CREDENTIALS);
+        }
+
+        // Assuming authService.login() returns an AuthEntity with the necessary details
+        String accessToken = jwtService.generateAccessToken(Map.of(
+                "id", authEntity.getId(),
+                "role", authEntity.getRole()));
+
+        String refreshToken = jwtService.generateRefreshToken(Map.of(
+                "id", authEntity.getId(),
+                "role", authEntity.getRole()));
 
         boolean cookieSecure = !"DEVELOPMENT".equalsIgnoreCase(envName);
         ResponseCookie accessCookie = ResponseCookie
-                .from("accessToken", tokens.get("access"))
+                .from("accessToken", accessToken)
                 .httpOnly(true)
                 .secure(cookieSecure)
                 .sameSite("Lax")
@@ -51,7 +69,7 @@ public class AuthController {
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie
-                .from("refreshToken", tokens.get("refresh"))
+                .from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(cookieSecure)
                 .sameSite("Strict")

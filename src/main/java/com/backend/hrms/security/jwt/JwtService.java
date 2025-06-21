@@ -2,7 +2,6 @@ package com.backend.hrms.security.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,8 +9,6 @@ import java.util.Map;
 import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Service;
-
-import com.backend.hrms.entity.AuthEntity;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -27,12 +24,12 @@ public class JwtService {
         this.props = props;
     }
 
-    public String generateAccessToken(AuthEntity user, Map<String, ?> extraClaims) {
-        return generateToken(extraClaims, props.getAccess());
+    public String generateAccessToken(Map<String, ?> claims) {
+        return generateToken(claims, props.getAccess());
     }
 
-    public String generateRefreshToken(AuthEntity user) {
-        return generateToken(Collections.emptyMap(), props.getRefresh());
+    public String generateRefreshToken(Map<String, ?> claims) {
+        return generateToken(claims, props.getRefresh());
     }
 
     public Claims parseAccessToken(String token) {
@@ -46,7 +43,6 @@ public class JwtService {
     private String generateToken(
             Map<String, ?> claims,
             JwtProperties.Token cfg) {
-        System.out.println("Generating JWT token with secret: " + cfg.getSecret());
         SecretKey key = Keys.hmacShaKeyFor(cfg.getSecret().getBytes(StandardCharsets.UTF_8));
         Instant now = Instant.now();
         return Jwts.builder()

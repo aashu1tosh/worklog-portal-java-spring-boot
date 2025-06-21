@@ -17,13 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.auth.AuthDTO;
+import com.backend.hrms.dto.auth.LoginLogDTO;
 import com.backend.hrms.entity.auth.AuthEntity;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
 import com.backend.hrms.helpers.auth.DeviceDetector;
 import com.backend.hrms.helpers.auth.GetClientsIp;
 import com.backend.hrms.security.jwt.JwtService;
-import com.backend.hrms.service.AuthService;
+import com.backend.hrms.service.auth.AuthService;
+import com.backend.hrms.service.auth.LoginLogService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,11 +41,12 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtService jwtService;
+    private final LoginLogService loginLogService;
 
-    public AuthController(AuthService authService, JwtService jwtService) {
+    public AuthController(AuthService authService, JwtService jwtService, LoginLogService loginLogService) {
         this.authService = authService;
         this.jwtService = jwtService;
-
+        this.loginLogService = loginLogService;
     }
 
     @PostMapping("/public/login")
@@ -69,15 +72,25 @@ public class AuthController {
             deviceId = UUID.randomUUID().toString();
         }
 
+        DeviceDetector.DeviceInfo deviceInfo = DeviceDetector.detectDevice(request);
         String clientIp = GetClientsIp.getClientIp(request);
 
-        DeviceDetector.DeviceInfo deviceInfo = DeviceDetector.detectDevice(request);
-
-        // Example: Log the device info and IP
         System.out.println("Client IP: " + clientIp);
         System.out.println("Device Type: " + deviceInfo.getDeviceType());
         System.out.println("OS: " + deviceInfo.getOs());
         System.out.println("Browser: " + deviceInfo.getBrowser());
+
+        // Save login log
+        LoginLogDTO.Request loginLogRequestDto = LoginLogDTO.Request.builder()
+                .clientIp(clientIp)
+                .deviceType(deviceInfo.getDeviceType().toString())
+                .os(deviceInfo.getOs())
+                .browser(deviceInfo.getBrowser())
+                .deviceId(deviceId)
+                .authId(authEntity.getId())
+                .build();
+
+        loginLogService.saveLoginLog(loginLogRequestDto);
 
         String accessToken = jwtService.generateAccessToken(Map.of(
                 "id", authEntity.getId(),

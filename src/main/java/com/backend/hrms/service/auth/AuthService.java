@@ -1,4 +1,4 @@
-package com.backend.hrms.service;
+package com.backend.hrms.service.auth;
 
 import java.util.Optional;
 

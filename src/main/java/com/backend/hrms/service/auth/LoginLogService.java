@@ -56,4 +56,16 @@ public class LoginLogService {
     public Page<LoginLogEntity> get(Pageable pageable, UUID authId) {
         return loginLogRepository.findAllByAuthId(pageable, authId);
     }
+
+    public void logoutFromOtherDevice(UUID id, UUID authId) {
+        LoginLogEntity loginLogEntity = loginLogRepository.findByIdAndAuthId(id, authId)
+                .orElseThrow(() -> HttpException.notFound("Login log not found"));
+
+        if (loginLogEntity.getLogOutTime() != null) {
+            throw HttpException.badRequest("Already logged out from this device");
+        }
+
+        loginLogEntity.setLogOutTime(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        loginLogRepository.save(loginLogEntity);
+    }
 }

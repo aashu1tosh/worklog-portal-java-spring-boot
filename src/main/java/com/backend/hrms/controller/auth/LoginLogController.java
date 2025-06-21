@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +32,7 @@ public class LoginLogController {
     }
 
     @GetMapping()
-    public ApiResponse<Object> get(
+    public ApiResponse<PaginatedResponse<LoginLogDTO.Response>> get(
             @AuthenticationPrincipal JwtPayload jwt,
             @PageableDefault(size = 10) Pageable pageable) {
 
@@ -50,5 +52,15 @@ public class LoginLogController {
 
         return new ApiResponse<>(true, Messages.SUCCESS, paginatedResponse);
 
+    }
+
+    @PostMapping("/logout/{id}")
+    public ApiResponse<String> logout(
+            @AuthenticationPrincipal JwtPayload jwt,
+            @PathVariable UUID id) {
+
+        loginLogService.logoutFromOtherDevice(id, UUID.fromString(jwt.id()));
+
+        return new ApiResponse<>(true, Messages.SUCCESS, "");
     }
 }

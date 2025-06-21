@@ -1,4 +1,4 @@
-package com.backend.hrms.repository;
+package com.backend.hrms.repository.auth;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.backend.hrms.entity.AuthEntity;
+import com.backend.hrms.entity.auth.AuthEntity;
 
 @Repository
 public interface AuthRepository extends JpaRepository<AuthEntity, UUID> {

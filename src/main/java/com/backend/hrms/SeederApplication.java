@@ -9,8 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.backend.hrms.constants.enums.Role;
 import com.backend.hrms.entity.AdminEntity;
-import com.backend.hrms.entity.AuthEntity;
-import com.backend.hrms.repository.AuthRepository;
+import com.backend.hrms.entity.auth.AuthEntity;
+import com.backend.hrms.repository.auth.AuthRepository;
 
 @SpringBootApplication
 @Profile("seed")

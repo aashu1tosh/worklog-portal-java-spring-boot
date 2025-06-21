@@ -5,10 +5,10 @@ import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.backend.hrms.dto.AuthDTO;
-import com.backend.hrms.entity.AuthEntity;
+import com.backend.hrms.dto.auth.AuthDTO;
+import com.backend.hrms.entity.auth.AuthEntity;
 import com.backend.hrms.exception.HttpException;
-import com.backend.hrms.repository.AuthRepository;
+import com.backend.hrms.repository.auth.AuthRepository;
 
 @Service
 public class AuthService {
@@ -25,17 +25,12 @@ public class AuthService {
         Optional<AuthEntity> check = authRepository.findByEmail(data.getEmail().toLowerCase());
         if (check.isPresent()) {
 
-            System.out.println("Email found: " + check.get().getEmail());
             boolean matches = passwordEncoder.matches(
                     data.getPassword(),
                     check.get().getPassword());
 
             if (!matches)
                 throw HttpException.badRequest("Invalid Credentials");
-
-            // newAccess = jwtService.generateAccessToken(check.get(), Map.of(
-            // "id", check.get().getId(),
-            // "role", check.get().getRole()));
 
             return check.get();
         } else

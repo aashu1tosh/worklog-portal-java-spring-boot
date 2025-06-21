@@ -1,4 +1,4 @@
-package com.backend.hrms.entity;
+package com.backend.hrms.entity.auth;
 
 import com.backend.hrms.entity.base.BaseEntity;
 
@@ -24,11 +24,23 @@ public class LoginLogEntity extends BaseEntity {
     @Column(name = "login_time")
     private String loginTime;
 
-    @Column(name="logout_time", nullable = true)
+    @Column(name = "logout_time", nullable = true)
     private String logOutTime;
 
-    @Column(name = "device_id")
+    @Column(name = "device_id", nullable = true)
     private String deviceId;
+
+    @Column(name = "client_ip", nullable = true)
+    private String clientIp;
+
+    @Column(name = "device_type", nullable = true)
+    private String deviceType;
+
+    @Column(name = "os", nullable = true)
+    private String os;
+
+    @Column(name = "browser", nullable = true)
+    private String browser;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_id", nullable = false)

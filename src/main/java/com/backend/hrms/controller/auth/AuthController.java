@@ -1,7 +1,9 @@
-package com.backend.hrms.controller;
+package com.backend.hrms.controller.auth;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -13,14 +15,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.hrms.dto.AuthDTO;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
-import com.backend.hrms.entity.AuthEntity;
+import com.backend.hrms.dto.auth.AuthDTO;
+import com.backend.hrms.entity.auth.AuthEntity;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
+import com.backend.hrms.helpers.auth.DeviceDetector;
+import com.backend.hrms.helpers.auth.GetClientsIp;
 import com.backend.hrms.security.jwt.JwtService;
 import com.backend.hrms.service.AuthService;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -42,14 +47,38 @@ public class AuthController {
     }
 
     @PostMapping("/public/login")
-    public ApiResponse<String> login(@Valid @RequestBody AuthDTO.LoginDTO body, HttpServletResponse response) {
+    public ApiResponse<String> login(@Valid @RequestBody AuthDTO.LoginDTO body, HttpServletRequest request,
+            HttpServletResponse response) {
         AuthEntity authEntity = authService.login(body);
 
-        if (authEntity == null) {
+        if (authEntity == null)
             throw HttpException.badRequest(Messages.INVALID_CREDENTIALS);
+
+        String deviceId = null;
+        // Try to get deviceId from cookies
+        if (request.getCookies() != null) {
+            deviceId = Arrays.stream(request.getCookies())
+                    .filter(cookie -> "deviceId".equals(cookie.getName()))
+                    .map(Cookie::getValue)
+                    .findFirst()
+                    .orElse(null);
         }
 
-        // Assuming authService.login() returns an AuthEntity with the necessary details
+        // If not found, generate a new UUID
+        if (deviceId == null || deviceId.isEmpty()) {
+            deviceId = UUID.randomUUID().toString();
+        }
+
+        String clientIp = GetClientsIp.getClientIp(request);
+
+        DeviceDetector.DeviceInfo deviceInfo = DeviceDetector.detectDevice(request);
+
+        // Example: Log the device info and IP
+        System.out.println("Client IP: " + clientIp);
+        System.out.println("Device Type: " + deviceInfo.getDeviceType());
+        System.out.println("OS: " + deviceInfo.getOs());
+        System.out.println("Browser: " + deviceInfo.getBrowser());
+
         String accessToken = jwtService.generateAccessToken(Map.of(
                 "id", authEntity.getId(),
                 "role", authEntity.getRole()));
@@ -77,6 +106,16 @@ public class AuthController {
                 .maxAge(Duration.ofDays(7))
                 .build();
 
+        ResponseCookie deviceIdCookie = ResponseCookie
+                .from("deviceId", deviceId)
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(Duration.ofDays(3650)) // 10 years
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, deviceIdCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 

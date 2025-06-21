@@ -1,5 +1,6 @@
 package com.backend.hrms.entity;
 
+import com.backend.hrms.entity.auth.AuthEntity;
 import com.backend.hrms.entity.base.BaseEntity;
 
 import jakarta.persistence.Column;

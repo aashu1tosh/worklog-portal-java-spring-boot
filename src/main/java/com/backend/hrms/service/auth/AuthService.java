@@ -1,6 +1,7 @@
 package com.backend.hrms.service.auth;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,5 +36,10 @@ public class AuthService {
             return check.get();
         } else
             throw HttpException.badRequest("Invalid Credentials");
+    }
+
+    public AuthEntity me(UUID id) {
+        return authRepository.findById(id)
+                .orElseThrow(() -> HttpException.notFound("Details not found for this user"));
     }
 }

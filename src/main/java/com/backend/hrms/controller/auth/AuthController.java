@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -180,11 +181,14 @@ public class AuthController {
         return new ApiResponse<String>(true, Messages.LOGOUT_SUCCESS, "");
     }
 
-    @PostMapping("/is-authenticated")
-    public ApiResponse<Boolean> isAuthenticated() {
-        // This endpoint can be used to check if the user is authenticated
-        // The actual authentication logic would typically be handled by Spring Security
-        return new ApiResponse<Boolean>(true, Messages.SUCCESS, true);
+    @GetMapping("/is-authenticated")
+    public ApiResponse<AuthDTO.MeDTO> isAuthenticated(
+            @AuthenticationPrincipal JwtPayload jwt) {
+        AuthEntity authEntity = authService.me(UUID.fromString(jwt.id()));
+
+        AuthDTO.MeDTO response = AuthDTO.MeDTO.fromEntity(authEntity);
+
+        return new ApiResponse<AuthDTO.MeDTO>(true, Messages.SUCCESS, response);
     }
 
     @PostMapping("/public/refresh-token")

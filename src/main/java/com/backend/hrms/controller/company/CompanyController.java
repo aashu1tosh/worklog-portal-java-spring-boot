@@ -49,7 +49,7 @@ public class CompanyController {
     }
 
     @GetMapping()
-    public ApiResponse<Object> get(
+    public ApiResponse<PaginatedResponse<CompanyDTO.Response>> get(
             @AuthenticationPrincipal JwtPayload jwt,
             @PageableDefault(size = 10) Pageable pageable,
             @RequestParam(name = "search", defaultValue = "") String search) {
@@ -68,7 +68,7 @@ public class CompanyController {
                         data.getTotalElements(),
                         data.getTotalPages()));
 
-        return new ApiResponse<>(true, Messages.SUCCESS, paginatedResponse);
+        return new ApiResponse<PaginatedResponse<CompanyDTO.Response>>(true, Messages.SUCCESS, paginatedResponse);
     }
 
     @GetMapping("/{id}")

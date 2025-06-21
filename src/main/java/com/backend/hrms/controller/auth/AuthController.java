@@ -19,6 +19,7 @@ import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.auth.LoginLogDTO;
 import com.backend.hrms.entity.auth.AuthEntity;
+import com.backend.hrms.entity.auth.LoginLogEntity;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
 import com.backend.hrms.helpers.auth.DeviceDetector;
@@ -90,13 +91,15 @@ public class AuthController {
                 .authId(authEntity.getId())
                 .build();
 
-        loginLogService.saveLoginLog(loginLogRequestDto);
+        LoginLogEntity log = loginLogService.saveLoginLog(loginLogRequestDto);
 
         String accessToken = jwtService.generateAccessToken(Map.of(
+                "key", log.getId().toString(),
                 "id", authEntity.getId(),
                 "role", authEntity.getRole()));
 
         String refreshToken = jwtService.generateRefreshToken(Map.of(
+                "key", log.getId().toString(),
                 "id", authEntity.getId(),
                 "role", authEntity.getRole()));
 

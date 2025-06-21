@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.hrms.dto.AuthDTO;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
+import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
 import com.backend.hrms.service.AuthService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
@@ -57,7 +59,6 @@ public class AuthController {
                 .maxAge(Duration.ofDays(7))
                 .build();
 
-        // 3) Add Set‑Cookie headers
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
@@ -69,5 +70,60 @@ public class AuthController {
     public ApiResponse<String> register() {
         System.out.println("Register endpoint hit");
         return new ApiResponse<String>(true, "Register endpoint is not implemented yet.", "");
+    }
+
+    @PostMapping("/public/logout")
+    public ApiResponse<String> logout(HttpServletResponse response) {
+        ResponseCookie accessCookie = ResponseCookie
+                .from("accessToken", "")
+                .httpOnly(true)
+                .secure(!"DEVELOPMENT".equalsIgnoreCase(envName))
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie
+                .from("refreshToken", "")
+                .httpOnly(true)
+                .secure(!"DEVELOPMENT".equalsIgnoreCase(envName))
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+        return new ApiResponse<String>(true, Messages.LOGOUT_SUCCESS, "");
+    }
+
+    @PostMapping("/is-authenticated")
+    public ApiResponse<Boolean> isAuthenticated() {
+        // This endpoint can be used to check if the user is authenticated
+        // The actual authentication logic would typically be handled by Spring Security
+        return new ApiResponse<Boolean>(true, Messages.SUCCESS, true);
+    }
+
+    @PostMapping("/public/refresh-token")
+    public ApiResponse<String> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            for (var cookie : request.getCookies()) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        System.out.println("Refresh Token: " + refreshToken);
+
+        if (refreshToken == null || refreshToken.isEmpty())
+            throw HttpException.badRequest(Messages.TOKEN_REFRESH_FAILED);
+
+        // Map<String, String> tokens = authService.refreshToken();
+        return new ApiResponse<String>(true, Messages.TOKEN_REFRESH, "");
     }
 }

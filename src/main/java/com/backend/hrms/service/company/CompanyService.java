@@ -26,7 +26,6 @@ public class CompanyService {
     }
 
     public void create(CompanyDTO.Create data) {
-        System.out.println("Creating company with name: " + data.getName());
 
         if (this.companyRepository.findByEmail(data.getEmail()).isPresent())
             throw HttpException.badRequest("Company with this email already exists");
@@ -46,7 +45,6 @@ public class CompanyService {
     }
 
     public Page<CompanyEntity> get(Pageable pageable, String search) {
-        System.out.println("Fetching company with search: " + search);
         Page<CompanyEntity> companies = this.companyRepository.findAll(pageable, search);
         return companies;
     }
@@ -57,7 +55,6 @@ public class CompanyService {
     }
 
     public void update(UUID id, CompanyDTO.Update data) {
-        System.out.println("Updating company with ID: " + id);
 
         CompanyEntity company = this.getById(id);
 

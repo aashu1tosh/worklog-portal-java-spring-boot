@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.backend.hrms.dto.auth.LoginLogDTO;
@@ -30,7 +32,6 @@ public class LoginLogService {
                         () -> HttpException
                                 .badRequest("User not found" + loginLogRequestDto.getAuthId()));
 
-        System.out.println("AuthEntity found: " + authEntity.getId());
         LoginLogEntity loginLogEntity = LoginLogEntity.builder()
                 .loginTime(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                 .clientIp(loginLogRequestDto.getClientIp())
@@ -50,5 +51,9 @@ public class LoginLogService {
 
         loginLogEntity.setLogOutTime(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         return loginLogRepository.save(loginLogEntity);
+    }
+
+    public Page<LoginLogEntity> get(Pageable pageable, UUID authId) {
+        return loginLogRepository.findAllByAuthId(pageable, authId);
     }
 }

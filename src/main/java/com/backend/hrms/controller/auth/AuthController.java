@@ -147,7 +147,6 @@ public class AuthController {
 
         UUID userKey = null;
 
-        System.out.println("JWT Payload: " + jwt);
         if (jwt != null) {
             userKey = UUID.fromString(jwt.key());
         } else
@@ -200,8 +199,6 @@ public class AuthController {
                 }
             }
         }
-
-        System.out.println("Refresh Token: " + refreshToken);
 
         if (refreshToken == null || refreshToken.isEmpty())
             throw HttpException.badRequest(Messages.TOKEN_REFRESH_FAILED);

@@ -71,30 +71,7 @@ public class CompanyController {
         return new ApiResponse<>(true, Messages.SUCCESS, paginatedResponse);
     }
 
-    @GetMapping("/:id")
-    public ApiResponse<Object> getById(
-            @AuthenticationPrincipal JwtPayload jwt,
-            @PageableDefault(size = 10) Pageable pageable,
-            @RequestParam(name = "search", defaultValue = "") String search) {
-
-        Page<CompanyEntity> data = companyService.get(pageable, search);
-
-        List<CompanyDTO.Response> company = data.getContent().stream()
-                .map(CompanyDTO.Response::fromEntity)
-                .toList();
-
-        PaginatedResponse<CompanyDTO.Response> paginatedResponse = new PaginatedResponse<>(
-                company,
-                new PaginatedResponse.Pagination(
-                        data.getNumber() + 1,
-                        data.getSize(),
-                        data.getTotalElements(),
-                        data.getTotalPages()));
-
-        return new ApiResponse<>(true, Messages.SUCCESS, paginatedResponse);
-    }
-
-    @GetMapping("/{id}") // Correct way to define a path variable
+    @GetMapping("/{id}")
     public ApiResponse<CompanyDTO.Response> getById(
             @AuthenticationPrincipal JwtPayload jwt,
             @PathVariable UUID id) {

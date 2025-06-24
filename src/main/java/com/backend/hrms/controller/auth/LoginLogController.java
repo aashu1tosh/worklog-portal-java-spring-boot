@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,7 +33,9 @@ public class LoginLogController {
     @GetMapping()
     public ApiResponse<PaginatedResponse<LoginLogDTO.Response>> get(
             @AuthenticationPrincipal JwtPayload jwt,
-            @PageableDefault(size = 10) Pageable pageable) {
+            Pageable pageable) {
+        System.out.println("Received Pageable: " + pageable);
+
         Page<LoginLogEntity> data = loginLogService.get(pageable, UUID.fromString(jwt.id()));
 
         List<LoginLogDTO.Response> log = data.getContent().stream()

@@ -54,7 +54,7 @@ public class LoginLogService {
     }
 
     public Page<LoginLogEntity> get(Pageable pageable, UUID authId) {
-        return loginLogRepository.findAllByAuthId(pageable, authId);
+        return loginLogRepository.findAllByAuthId(authId, pageable);
     }
 
     public void logoutFromOtherDevice(UUID id, UUID authId) {

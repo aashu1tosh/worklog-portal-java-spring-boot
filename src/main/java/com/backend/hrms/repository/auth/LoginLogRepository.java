@@ -15,7 +15,7 @@ public interface LoginLogRepository extends JpaRepository<LoginLogEntity, UUID> 
 
     Optional<LoginLogEntity> findById(UUID id);
 
-    Page<LoginLogEntity> findAllByAuthId(Pageable pageable, UUID authId);
+    Page<LoginLogEntity> findAllByAuthId(UUID authId, Pageable pageable);
 
     Optional<LoginLogEntity> findByIdAndAuthId(UUID id, UUID authId);
 }

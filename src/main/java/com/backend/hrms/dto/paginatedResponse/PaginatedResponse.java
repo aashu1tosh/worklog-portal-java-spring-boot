@@ -20,13 +20,13 @@ public class PaginatedResponse<T> {
     @Setter
     public static class Pagination {
         private int page;
-        private int limit;
+        private int size;
         private long total;
         private int totalPages;
 
-        public Pagination(int page, int limit, long total, int totalPages) {
+        public Pagination(int page, int size, long total, int totalPages) {
             this.page = page;
-            this.limit = limit;
+            this.size = size;
             this.total = total;
             this.totalPages = totalPages;
         }

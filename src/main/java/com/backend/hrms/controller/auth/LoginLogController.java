@@ -35,7 +35,6 @@ public class LoginLogController {
     public ApiResponse<PaginatedResponse<LoginLogDTO.Response>> get(
             @AuthenticationPrincipal JwtPayload jwt,
             @PageableDefault(size = 10) Pageable pageable) {
-
         Page<LoginLogEntity> data = loginLogService.get(pageable, UUID.fromString(jwt.id()));
 
         List<LoginLogDTO.Response> log = data.getContent().stream()

@@ -69,8 +69,8 @@ public class LoginLogService {
         loginLogRepository.save(loginLogEntity);
     }
 
-    public LoginLogEntity isLoggedIn(UUID id, UUID authId) {
-        return loginLogRepository.findByIdAndAuthId(id, authId)
+    public LoginLogEntity isLoggedIn(UUID id) {
+        return loginLogRepository.findById(id)
                 .orElseThrow(() -> HttpException.notFound("Not Authenticated. Login Again!"));
     }
 }

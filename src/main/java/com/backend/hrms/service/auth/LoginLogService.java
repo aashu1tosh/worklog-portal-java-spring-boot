@@ -68,4 +68,9 @@ public class LoginLogService {
         loginLogEntity.setLogOutTime(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         loginLogRepository.save(loginLogEntity);
     }
+
+    public LoginLogEntity isLoggedIn(UUID id, UUID authId) {
+        return loginLogRepository.findByIdAndAuthId(id, authId)
+                .orElseThrow(() -> HttpException.notFound("Not Authenticated. Login Again!"));
+    }
 }

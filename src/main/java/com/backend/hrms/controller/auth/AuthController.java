@@ -184,7 +184,8 @@ public class AuthController {
     @GetMapping("/is-authenticated")
     public ApiResponse<AuthDTO.MeDTO> isAuthenticated(
             @AuthenticationPrincipal JwtPayload jwt) {
-        AuthEntity authEntity = authService.me(UUID.fromString(jwt.id()));
+        loginLogService.isLoggedIn(UUID.fromString(jwt.key()), UUID.fromString(jwt.id()));
+        AuthEntity authEntity = authService.me(UUID.fromString(jwt.key()));
 
         AuthDTO.MeDTO response = AuthDTO.MeDTO.fromEntity(authEntity);
 

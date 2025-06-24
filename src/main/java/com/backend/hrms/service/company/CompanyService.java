@@ -45,7 +45,7 @@ public class CompanyService {
     }
 
     public Page<CompanyEntity> get(Pageable pageable, String search) {
-        Page<CompanyEntity> companies = this.companyRepository.findAll(pageable, search);
+        Page<CompanyEntity> companies = this.companyRepository.findByNameContainingIgnoreCase(pageable, search);
         return companies;
     }
 

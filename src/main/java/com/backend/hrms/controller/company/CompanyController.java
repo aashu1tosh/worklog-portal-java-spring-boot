@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -51,9 +50,9 @@ public class CompanyController {
     @GetMapping()
     public ApiResponse<PaginatedResponse<CompanyDTO.Response>> get(
             @AuthenticationPrincipal JwtPayload jwt,
-            @PageableDefault(size = 10) Pageable pageable,
+            Pageable pageable,
             @RequestParam(name = "search", defaultValue = "") String search) {
-
+        System.out.println("Received Pageable: " + pageable);
         Page<CompanyEntity> data = companyService.get(pageable, search);
 
         List<CompanyDTO.Response> company = data.getContent().stream()

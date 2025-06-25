@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.backend.hrms.dto.auth.AuthDTO;
+import com.backend.hrms.entity.AdminEntity;
 import com.backend.hrms.entity.auth.AuthEntity;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.repository.auth.AuthRepository;
@@ -43,7 +44,7 @@ public class AuthService {
                 .orElseThrow(() -> HttpException.notFound("Details not found for this user"));
     }
 
-    public void registerAdmin(AuthDTO.RegisterAdminDTO data) {
+    public void registerAdmin(AuthDTO.RegisterAdminDTO data, AdminEntity adminEntity) {
         if (authRepository.existsByEmail(data.getEmail().toLowerCase()))
             throw HttpException.badRequest("Email already exists");
         
@@ -51,6 +52,7 @@ public class AuthService {
         authEntity.setEmail(data.getEmail().toLowerCase());
         authEntity.setPassword(passwordEncoder.encode(data.getPassword()));
         authEntity.setRole(data.getRole());
+        authEntity.setAdmin(adminEntity);
         authRepository.save(authEntity);
     }
 }

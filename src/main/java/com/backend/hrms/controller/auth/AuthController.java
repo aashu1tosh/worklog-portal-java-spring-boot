@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.WebUtils;
 
+import com.backend.hrms.constants.enums.Role;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.auth.LoginLogDTO;
@@ -30,6 +31,7 @@ import com.backend.hrms.helpers.auth.DeviceDetector;
 import com.backend.hrms.helpers.auth.GetClientsIp;
 import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.security.jwt.JwtService;
+import com.backend.hrms.service.AdminService;
 import com.backend.hrms.service.auth.AuthService;
 import com.backend.hrms.service.auth.LoginLogService;
 
@@ -37,9 +39,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")
+@AllArgsConstructor
 public class AuthController {
 
     @Value("${env-name:DEVELOPMENT}")
@@ -48,12 +52,7 @@ public class AuthController {
     private final AuthService authService;
     private final JwtService jwtService;
     private final LoginLogService loginLogService;
-
-    public AuthController(AuthService authService, JwtService jwtService, LoginLogService loginLogService) {
-        this.authService = authService;
-        this.jwtService = jwtService;
-        this.loginLogService = loginLogService;
-    }
+    private final AdminService adminService;
 
     @PostMapping("/public/login")
     public ApiResponse<String> login(@Valid @RequestBody AuthDTO.LoginDTO body, HttpServletRequest request,
@@ -141,7 +140,10 @@ public class AuthController {
     @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN', 'COMPANY_SUPER_ADMIN', 'COMPANY_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<String> register(@Valid @RequestBody AuthDTO.RegisterAdminDTO body) {
-        authService.registerAdmin(body);
+
+        if(Role.SUDO_ADMIN.equals(body.getRole()))
+            throw HttpException.forbidden("Invalid Role");
+        adminService.register(body);
         return new ApiResponse<String>(true, "Register endpoint is not implemented yet.", "");
     }
 

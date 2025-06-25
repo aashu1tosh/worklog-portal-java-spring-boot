@@ -22,6 +22,9 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, UUID> {
 
         Page<CompanyEntity> findByNameContainingIgnoreCase(Pageable pageable, @Param("search") String search);
 
-        // Optional<CompanyEntity> findById(UUID id);
+        Optional<CompanyEntity> findByEmailAndIdNot(UUID id, String email);
+        
+        Optional<CompanyEntity> findByPhoneAndIdNot(UUID id, String phone);
+
 
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -136,10 +137,11 @@ public class AuthController {
         return new ApiResponse<String>(true, Messages.LOGIN_SUCCESS, "");
     }
 
-    @PostMapping("/public/register")
+    @PostMapping("/register/admin")
+    @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN', 'COMPANY_SUPER_ADMIN', 'COMPANY_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<String> register() {
-        System.out.println("Register endpoint hit");
+    public ApiResponse<String> register(@Valid @RequestBody AuthDTO.RegisterAdminDTO body) {
+        authService.registerAdmin(body);
         return new ApiResponse<String>(true, "Register endpoint is not implemented yet.", "");
     }
 

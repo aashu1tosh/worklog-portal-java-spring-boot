@@ -30,6 +30,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/company")
+@PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN')")
 public class CompanyController {
     private final CompanyService companyService;
 
@@ -39,7 +40,6 @@ public class CompanyController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN')")
     public ApiResponse<String> createCompany(@Valid @RequestBody CompanyDTO.Create body,
             @AuthenticationPrincipal JwtPayload jwt1) {
 

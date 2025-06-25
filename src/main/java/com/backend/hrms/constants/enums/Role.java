@@ -1,10 +1,11 @@
 package com.backend.hrms.constants.enums;
 
 public enum Role {
-    COMPANY_EMPLOYEE("ROLE_COMPANY_EMPLOYEE"),
-    COMPANY_ADMIN("ROLE_COMPANY_ADMIN"),
     ADMIN("ROLE_ADMIN"),
-    SUDO_ADMIN("ROLE_SUDO_ADMIN");
+    SUDO_ADMIN("ROLE_SUDO_ADMIN"),
+    COMPANY_SUPER_ADMIN("ROLE_COMPANY_SUPER_ADMIN"),
+    COMPANY_ADMIN("ROLE_COMPANY_ADMIN"),
+    COMPANY_EMPLOYEE("ROLE_COMPANY_EMPLOYEE");
 
     private final String springSecurityRole;
 

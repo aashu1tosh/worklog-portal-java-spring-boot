@@ -42,4 +42,15 @@ public class AuthService {
         return authRepository.findById(id)
                 .orElseThrow(() -> HttpException.notFound("Details not found for this user"));
     }
+
+    public void registerAdmin(AuthDTO.RegisterAdminDTO data) {
+        if (authRepository.existsByEmail(data.getEmail().toLowerCase()))
+            throw HttpException.badRequest("Email already exists");
+        
+        AuthEntity authEntity = new AuthEntity();
+        authEntity.setEmail(data.getEmail().toLowerCase());
+        authEntity.setPassword(passwordEncoder.encode(data.getPassword()));
+        authEntity.setRole(data.getRole());
+        authRepository.save(authEntity);
+    }
 }

@@ -137,7 +137,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/admin")
-    @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN', 'COMPANY_SUPER_ADMIN', 'COMPANY_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUDO_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<String> register(@Valid @RequestBody AuthDTO.RegisterAdminDTO body) {
 

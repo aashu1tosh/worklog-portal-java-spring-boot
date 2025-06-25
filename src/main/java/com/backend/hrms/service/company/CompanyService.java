@@ -67,13 +67,13 @@ public class CompanyService {
         }
 
         if (data.getEmail() != null && !data.getEmail().isBlank()) {
-            if (this.companyRepository.findByEmailAndIdNot(id, data.getEmail()).isPresent())
+            if (this.companyRepository.findByEmailAndIdNot(data.getEmail(), id).isPresent())
                 throw HttpException.badRequest("Company with this email already exists");
             company.setEmail(data.getEmail());
         }
 
         if (data.getPhone() != null && !data.getPhone().isBlank()) {
-            if (this.companyRepository.findByPhoneAndIdNot(id, data.getPhone()).isPresent())
+            if (this.companyRepository.findByPhoneAndIdNot(data.getPhone(), id).isPresent())
                 throw HttpException.badRequest("Company with this phone number already exists");
             company.setPhone(data.getPhone());
         }

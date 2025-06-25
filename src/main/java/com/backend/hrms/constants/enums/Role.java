@@ -4,7 +4,7 @@ public enum Role {
     COMPANY_EMPLOYEE("ROLE_COMPANY_EMPLOYEE"),
     COMPANY_ADMIN("ROLE_COMPANY_ADMIN"),
     ADMIN("ROLE_ADMIN"),
-    SUDO_ADMIN("ROLE_SUDO_ADMIN"); // Changed to include "ROLE_" prefix
+    SUDO_ADMIN("ROLE_SUDO_ADMIN");
 
     private final String springSecurityRole;
 

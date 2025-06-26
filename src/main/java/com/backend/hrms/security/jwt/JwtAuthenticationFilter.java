@@ -12,6 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 
 import com.backend.hrms.exception.HttpException;
+import com.backend.hrms.helpers.Messages;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -59,14 +60,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             } catch (JwtException ex) {
                 System.out.println("~ JwtAuthenticationFilter ~ JWT Exception: " + ex.getMessage());
-                throw HttpException.unauthorized("TOKEN_EXPIRED");
+                throw HttpException.unauthorized(Messages.TOKEN_EXPIRED);
             }
+        } else {
+            var refreshToken = resolveRefreshToken(req);
+            if (refreshToken != null) {
+                throw HttpException.unauthorized(Messages.TOKEN_EXPIRED);
+            } else
+                throw HttpException.unauthorized(Messages.UNAUTHORIZED);
         }
         chain.doFilter(req, res);
     }
 
     private String resolveAccessToken(HttpServletRequest req) {
         Cookie jwtCookie = WebUtils.getCookie(req, "accessToken");
+        return (jwtCookie != null) ? jwtCookie.getValue() : null;
+    }
+
+    private String resolveRefreshToken(HttpServletRequest req) {
+        Cookie jwtCookie = WebUtils.getCookie(req, "refreshToken");
         return (jwtCookie != null) ? jwtCookie.getValue() : null;
     }
 }

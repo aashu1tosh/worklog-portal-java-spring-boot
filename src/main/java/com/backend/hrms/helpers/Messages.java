@@ -19,6 +19,7 @@ public final class Messages {
     public static final String FORBIDDEN = "Access forbidden";
     public static final String INTERNAL_ERROR = "Internal server error";
     public static final String BAD_REQUEST = "Bad request";
-    public static final String UNAUTHORIZED = "Unauthorized access";
+    public static final String UNAUTHORIZED = "Unauthorized to access this resource";
+    public static final String TOKEN_EXPIRED = "Token expired";
 
 }

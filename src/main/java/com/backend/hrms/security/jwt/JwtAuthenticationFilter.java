@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Claims claims = jwt.parseAccessToken(token);
 
                 /* ---- 1. Extract what you need from the token ------------------ */
-                JwtPayload payload = JwtPayload.from(claims); // helper you write
+                JwtPayload payload = JwtPayload.from(claims);
                 String role = claims.get("role", String.class);
 
                 /* ---- 2. Turn the role(s) into GrantedAuthority --------------- */
@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 /* ---- 3. Build the Authentication object ---------------------- */
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         payload, // principal (user details)
-                        null, // credentials (none for JWT)
+                        null,
                         authorities); // authorities for @PreAuthorize, etc.
 
                 /* ---- 4. Put it in the context -------------------------------- */

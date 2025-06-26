@@ -35,15 +35,14 @@ import com.backend.hrms.service.AdminService;
 import com.backend.hrms.service.auth.AuthService;
 import com.backend.hrms.service.auth.LoginLogService;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")
-@AllArgsConstructor
 public class AuthController {
 
     @Value("${env-name:DEVELOPMENT}")
@@ -53,6 +52,14 @@ public class AuthController {
     private final JwtService jwtService;
     private final LoginLogService loginLogService;
     private final AdminService adminService;
+
+    public AuthController(AuthService authService, JwtService jwtService, LoginLogService loginLogService,
+            AdminService adminService) {
+        this.authService = authService;
+        this.jwtService = jwtService;
+        this.loginLogService = loginLogService;
+        this.adminService = adminService;
+    }
 
     @PostMapping("/public/login")
     public ApiResponse<String> login(@Valid @RequestBody AuthDTO.LoginDTO body, HttpServletRequest request,
@@ -141,7 +148,7 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<String> register(@Valid @RequestBody AuthDTO.RegisterAdminDTO body) {
 
-        if(Role.SUDO_ADMIN.equals(body.getRole()))
+        if (Role.SUDO_ADMIN.equals(body.getRole()))
             throw HttpException.forbidden("Invalid Role");
         adminService.register(body);
         return new ApiResponse<String>(true, "Register endpoint is not implemented yet.", "");
@@ -199,20 +206,54 @@ public class AuthController {
     @PostMapping("/public/refresh-token")
     public ApiResponse<String> refreshToken(HttpServletRequest request, HttpServletResponse response) {
 
-        String refreshToken = null;
-        if (request.getCookies() != null) {
-            for (var cookie : request.getCookies()) {
-                if ("refreshToken".equals(cookie.getName())) {
-                    refreshToken = cookie.getValue();
-                    break;
-                }
-            }
-        }
+        String refreshToken = resolveRefreshToken(request);
 
-        if (refreshToken == null || refreshToken.isEmpty())
+        if (refreshToken != null) {
+            try {
+
+                Claims claims = jwtService.parseRefreshToken(refreshToken);
+                UUID key = claims.get("key", UUID.class);
+                loginLogService.isLoggedIn(key);
+
+                // valid so generate new tokens
+                String accessToken = jwtService.generateAccessToken(Map.of(
+                        "key", key.toString(),
+                        "id", claims.get("id", UUID.class),
+                        "role", claims.get("role", String.class)));
+
+                String newRefreshToken = jwtService.generateRefreshToken(Map.of(
+                        "key", key.toString(),
+                        "id", claims.get("id", UUID.class),
+                        "role", claims.get("role", String.class)));
+
+                boolean cookieSecure = !"DEVELOPMENT".equalsIgnoreCase(envName);
+
+                ResponseCookie accessCookie = ResponseCookie
+                        .from("accessToken", accessToken)
+                        .httpOnly(true)
+                        .secure(cookieSecure)
+                        .sameSite("Lax")
+                        .path("/")
+                        .maxAge(Duration.ofDays(7))
+                        .build();
+
+                ResponseCookie refreshCookie = ResponseCookie
+                        .from("refreshToken", newRefreshToken)
+                        .httpOnly(true)
+                        .secure(cookieSecure)
+                        .sameSite("Strict")
+                        .path("/")
+                        .maxAge(Duration.ofDays(7))
+                        .build();
+
+                response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+                response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+            } catch (Exception e) {
+                throw HttpException.badRequest(Messages.TOKEN_REFRESH_FAILED);
+            }
+        } else
             throw HttpException.badRequest(Messages.TOKEN_REFRESH_FAILED);
 
-        // Map<String, String> tokens = authService.refreshToken();
         return new ApiResponse<String>(true, Messages.TOKEN_REFRESH, "");
     }
 

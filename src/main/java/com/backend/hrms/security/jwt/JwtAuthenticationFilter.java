@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
         @NonNull HttpServletRequest req,
         @NonNull HttpServletResponse res,
-        @NonNull FilterChain chain) throws IOException, ServletException {
+        @NonNull FilterChain chain) throws HttpException, IOException, ServletException {
 
         String token = resolveAccessToken(req);
         if (token != null) {

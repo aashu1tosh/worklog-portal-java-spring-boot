@@ -7,7 +7,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 
@@ -21,8 +20,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 
-@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwt;
@@ -32,9 +31,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest req,
-            HttpServletResponse res,
-            FilterChain chain) throws IOException, ServletException, HttpException {
+    protected void doFilterInternal(
+        @NonNull HttpServletRequest req,
+        @NonNull HttpServletResponse res,
+        @NonNull FilterChain chain) throws IOException, ServletException {
 
         String token = resolveAccessToken(req);
         if (token != null) {
@@ -70,6 +70,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw HttpException.unauthorized(Messages.UNAUTHORIZED);
         }
         chain.doFilter(req, res);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return path.matches(".*/public(/.*)?$") || path.matches(".*/error.*$");
     }
 
     private String resolveAccessToken(HttpServletRequest req) {

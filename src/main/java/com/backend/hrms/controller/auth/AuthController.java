@@ -62,7 +62,7 @@ public class AuthController {
     }
 
     @PostMapping("/public/login")
-    public ApiResponse<String> login(@Valid @RequestBody AuthDTO.LoginDTO body, HttpServletRequest request,
+    public ApiResponse<AuthDTO.MeDTO> login(@Valid @RequestBody AuthDTO.LoginDTO body, HttpServletRequest request,
             HttpServletResponse response) {
         AuthEntity authEntity = authService.login(body);
 
@@ -140,7 +140,10 @@ public class AuthController {
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
-        return new ApiResponse<String>(true, Messages.LOGIN_SUCCESS, "");
+        var meData = authService.me(authEntity.getId());
+        var responseData = AuthDTO.MeDTO.fromEntity(meData);
+
+        return new ApiResponse<AuthDTO.MeDTO>(true, Messages.LOGIN_SUCCESS, responseData);
     }
 
     @PostMapping("/register/admin")

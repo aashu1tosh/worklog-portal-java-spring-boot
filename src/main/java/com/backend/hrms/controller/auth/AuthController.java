@@ -215,18 +215,18 @@ public class AuthController {
             try {
 
                 Claims claims = jwtService.parseRefreshToken(refreshToken);
-                UUID key = claims.get("key", UUID.class);
+                UUID key = UUID.fromString(claims.get("key", String.class));
                 loginLogService.isLoggedIn(key);
 
                 // valid so generate new tokens
                 String accessToken = jwtService.generateAccessToken(Map.of(
                         "key", key.toString(),
-                        "id", claims.get("id", UUID.class),
+                        "id", claims.get("id", String.class),
                         "role", claims.get("role", String.class)));
 
                 String newRefreshToken = jwtService.generateRefreshToken(Map.of(
                         "key", key.toString(),
-                        "id", claims.get("id", UUID.class),
+                        "id", claims.get("id", String.class),
                         "role", claims.get("role", String.class)));
 
                 boolean cookieSecure = !"DEVELOPMENT".equalsIgnoreCase(envName);

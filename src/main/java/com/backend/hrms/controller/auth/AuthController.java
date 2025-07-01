@@ -7,19 +7,15 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.WebUtils;
 
-import com.backend.hrms.constants.enums.Role;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.auth.LoginLogDTO;
@@ -31,7 +27,6 @@ import com.backend.hrms.helpers.auth.DeviceDetector;
 import com.backend.hrms.helpers.auth.GetClientsIp;
 import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.security.jwt.JwtService;
-import com.backend.hrms.service.AdminService;
 import com.backend.hrms.service.auth.AuthService;
 import com.backend.hrms.service.auth.LoginLogService;
 
@@ -51,14 +46,11 @@ public class AuthController {
     private final AuthService authService;
     private final JwtService jwtService;
     private final LoginLogService loginLogService;
-    private final AdminService adminService;
 
-    public AuthController(AuthService authService, JwtService jwtService, LoginLogService loginLogService,
-            AdminService adminService) {
+    public AuthController(AuthService authService, JwtService jwtService, LoginLogService loginLogService) {
         this.authService = authService;
         this.jwtService = jwtService;
         this.loginLogService = loginLogService;
-        this.adminService = adminService;
     }
 
     @PostMapping("/public/login")
@@ -145,21 +137,6 @@ public class AuthController {
 
         return new ApiResponse<AuthDTO.MeDTO>(true, Messages.LOGIN_SUCCESS, responseData);
     }
-
-    @PostMapping("/register/admin")
-    @PreAuthorize("hasAnyRole('SUDO_ADMIN')")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<String> register(@Valid @RequestBody AuthDTO.RegisterAdminDTO body) {
-
-        if (!Role.ADMIN.equals(body.getRole()))
-            throw HttpException.forbidden("Invalid role only ADMIN role is allowed for registration.");
-
-        adminService.register(body);
-        return new ApiResponse<String>(true, "Register endpoint is not implemented yet.", "");
-    }
-
-
-    
 
     @PostMapping("/logout")
     public ApiResponse<String> logout(@AuthenticationPrincipal JwtPayload jwt, HttpServletResponse response) {

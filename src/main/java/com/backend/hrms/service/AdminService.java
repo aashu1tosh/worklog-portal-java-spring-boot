@@ -1,8 +1,10 @@
 package com.backend.hrms.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.backend.hrms.dto.auth.AuthDTO;
+import com.backend.hrms.dto.auth.AdminDTO;
 import com.backend.hrms.entity.AdminEntity;
 import com.backend.hrms.repository.AdminRepository;
 import com.backend.hrms.service.auth.AuthService;
@@ -18,7 +20,7 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final AuthService authService;
 
-    public void register(AuthDTO.RegisterAdminDTO data) {
+    public void register(AdminDTO.RegisterDTO data) {
 
         AdminEntity adminEntity = new AdminEntity();
         adminEntity.setFirstName(data.getFirstName());
@@ -27,5 +29,13 @@ public class AdminService {
         adminRepository.save(adminEntity);
 
         authService.registerAdmin(data, adminEntity);
+    }
+
+    public Page<AdminEntity> get(Pageable pageable, String search) {
+        if (search == null || search.trim().isEmpty()) {
+            return adminRepository.findAll(pageable);
+        } else {
+            return adminRepository.findByNameContainingIgnoreCase(search, pageable);
+        }
     }
 }

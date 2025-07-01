@@ -6,11 +6,13 @@ import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.backend.hrms.dto.auth.AdminDTO;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.entity.AdminEntity;
 import com.backend.hrms.entity.auth.AuthEntity;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.repository.auth.AuthRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -46,10 +48,11 @@ public class AuthService {
                 .orElseThrow(() -> HttpException.notFound("Details not found for this user"));
     }
 
-    public void registerAdmin(AuthDTO.RegisterAdminDTO data, AdminEntity adminEntity) {
+    public void registerAdmin(AdminDTO.RegisterDTO data, AdminEntity adminEntity) {
+        
         if (authRepository.existsByEmail(data.getEmail().toLowerCase()))
             throw HttpException.badRequest("Email already exists");
-        
+
         AuthEntity authEntity = new AuthEntity();
         authEntity.setEmail(data.getEmail().toLowerCase());
         authEntity.setPassword(passwordEncoder.encode(data.getPassword()));

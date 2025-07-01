@@ -2,7 +2,7 @@ package com.backend.hrms.dto.auth;
 
 import com.backend.hrms.constants.enums.Role;
 import com.backend.hrms.dto.baseEntityResponse.BaseResponse;
-import com.backend.hrms.entity.auth.AuthEntity;
+import com.backend.hrms.entity.AdminEntity;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,19 +14,29 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-public class AuthDTO {
+public class AdminDTO {
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    @Builder
-    public static class LoginDTO {
-        @Email(message = "Must be a valid e‑mail address")
-        @NotBlank(message = "E‑mail is required")
-        private String email;
+    @SuperBuilder
+    public static class Response extends BaseResponse {
+        private String firstName;
+        private String middleName;
+        private String lastName;
+        private AuthDTO.MeDTO auth;
 
-        @NotBlank(message = "Password is required")
-        private String password;
+        public static Response fromEntity(AdminEntity entity) {
+            return Response.builder()
+                    .id(entity.getId())
+                    .createdAt(entity.getCreatedAt())
+                    .updatedAt(entity.getUpdatedAt())
+                    .firstName(entity.getFirstName())
+                    .middleName(entity.getMiddleName())
+                    .lastName(entity.getLastName())
+                    .auth(null == entity.getAuth() ? null : AuthDTO.MeDTO.fromEntity(entity.getAuth()))
+                    .build();
+        }
     }
 
     @Getter
@@ -34,7 +44,7 @@ public class AuthDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class RegisterAdminDTO {
+    public static class RegisterDTO {
 
         @Email(message = "Must be a valid e‑mail address")
         @NotBlank(message = "E‑mail is required")
@@ -56,29 +66,5 @@ public class AuthDTO {
 
         @NotBlank(message = "Last name is required")
         private String lastName;
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @SuperBuilder
-    public static class MeDTO extends BaseResponse {
-        private String email;
-        private String role;
-        private String phone;
-        private AdminDTO.Response admin;
-
-        public static MeDTO fromEntity(AuthEntity entity) {
-            return MeDTO.builder()
-                    .id(entity.getId())
-                    .createdAt(entity.getCreatedAt())
-                    .updatedAt(entity.getUpdatedAt())
-                    .email(entity.getEmail())
-                    .phone(entity.getPhone())
-                    .role(entity.getRole().name())
-                    .admin(entity.getAdmin() != null ? AdminDTO.Response.fromEntity(entity.getAdmin()) : null)
-                    .build();
-        }
     }
 }

@@ -151,11 +151,15 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<String> register(@Valid @RequestBody AuthDTO.RegisterAdminDTO body) {
 
-        if (Role.SUDO_ADMIN.equals(body.getRole()))
-            throw HttpException.forbidden("Invalid Role");
+        if (!Role.ADMIN.equals(body.getRole()))
+            throw HttpException.forbidden("Invalid role only ADMIN role is allowed for registration.");
+
         adminService.register(body);
         return new ApiResponse<String>(true, "Register endpoint is not implemented yet.", "");
     }
+
+
+    
 
     @PostMapping("/logout")
     public ApiResponse<String> logout(@AuthenticationPrincipal JwtPayload jwt, HttpServletResponse response) {

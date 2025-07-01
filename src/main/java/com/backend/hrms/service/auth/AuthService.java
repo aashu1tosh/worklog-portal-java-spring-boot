@@ -11,8 +11,10 @@ import com.backend.hrms.entity.AdminEntity;
 import com.backend.hrms.entity.auth.AuthEntity;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.repository.auth.AuthRepository;
+import jakarta.transaction.Transactional;
 
 @Service
+@Transactional
 public class AuthService {
 
     private final AuthRepository authRepository;

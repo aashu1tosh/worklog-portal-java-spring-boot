@@ -42,24 +42,24 @@ public class AdminController {
     @GetMapping()
     @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN')")
     public ApiResponse<PaginatedResponse<AdminDTO.Response>> get(
-    Pageable pageable,
-    @RequestParam(name = "search", defaultValue = "") String search) {
-    var response = adminService.get(pageable, search);
+            Pageable pageable,
+            @RequestParam(name = "search", defaultValue = "") String search) {
+        var response = adminService.get(pageable, search);
 
-    var data = response.getContent().stream()
-    .map(AdminDTO.Response::fromEntity)
-    .toList();
+        var data = response.getContent().stream()
+                .map(AdminDTO.Response::fromEntity)
+                .toList();
 
-    var paginatedResponse = new PaginatedResponse<AdminDTO.Response>(
-    data,
-    new PaginatedResponse.Pagination(
-    response.getNumber() + 1,
-    response.getSize(),
-    response.getTotalElements(),
-    response.getTotalPages()));
+        var paginatedResponse = new PaginatedResponse<AdminDTO.Response>(
+                data,
+                new PaginatedResponse.Pagination(
+                        response.getNumber() + 1,
+                        response.getSize(),
+                        response.getTotalElements(),
+                        response.getTotalPages()));
 
-    return new ApiResponse<PaginatedResponse<AdminDTO.Response>>(true,
-    Messages.SUCCESS, paginatedResponse);
+        return new ApiResponse<PaginatedResponse<AdminDTO.Response>>(true,
+                Messages.SUCCESS, paginatedResponse);
     }
 
 }

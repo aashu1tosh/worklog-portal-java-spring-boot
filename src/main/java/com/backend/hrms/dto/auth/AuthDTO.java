@@ -80,5 +80,18 @@ public class AuthDTO {
                     .admin(entity.getAdmin() != null ? AdminDTO.Response.fromEntity(entity.getAdmin()) : null)
                     .build();
         }
+
+        // to avoid circular reference
+        public static MeDTO fromEntityShallow(AuthEntity entity) {
+            return MeDTO.builder()
+                    .id(entity.getId())
+                    .createdAt(entity.getCreatedAt())
+                    .updatedAt(entity.getUpdatedAt())
+                    .email(entity.getEmail())
+                    .phone(entity.getPhone())
+                    .role(entity.getRole().name())
+                    .admin(null)
+                    .build();
+        }
     }
 }

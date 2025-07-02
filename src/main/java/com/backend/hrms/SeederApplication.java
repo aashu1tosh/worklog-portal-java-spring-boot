@@ -1,5 +1,6 @@
 package com.backend.hrms;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,6 +16,9 @@ import com.backend.hrms.repository.auth.AuthRepository;
 @SpringBootApplication
 @Profile("seed")
 public class SeederApplication implements CommandLineRunner {
+
+    @Value("${sudo-admin-password:Admin@123}")
+    private String password;
 
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
@@ -62,7 +66,7 @@ public class SeederApplication implements CommandLineRunner {
             // Create Auth Entity
             AuthEntity authEntity = new AuthEntity();
             authEntity.setEmail(sudoAdminEmail);
-            authEntity.setPassword(passwordEncoder.encode("SuperSecurePassword123!"));
+            authEntity.setPassword(passwordEncoder.encode(password));
             authEntity.setRole(Role.SUDO_ADMIN);
 
             // Set the bidirectional relationship
@@ -74,7 +78,7 @@ public class SeederApplication implements CommandLineRunner {
 
             System.out.println("✅ SUDO ADMIN seeded successfully!");
             System.out.println("📧 Email: " + sudoAdminEmail);
-            System.out.println("🔐 Password: SuperSecurePassword123!");
+            System.out.println("🔐 Password: " + password);
         } else {
             System.out.println("ℹ️ SUDO ADMIN already exists, skipping seeding.");
         }

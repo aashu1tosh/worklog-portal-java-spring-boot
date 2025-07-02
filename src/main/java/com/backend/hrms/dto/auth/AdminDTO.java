@@ -27,6 +27,7 @@ public class AdminDTO {
         private AuthDTO.MeDTO auth;
 
         public static Response fromEntity(AdminEntity entity) {
+            System.out.println("Converting AdminEntity to Response: " + entity);
             return Response.builder()
                     .id(entity.getId())
                     .createdAt(entity.getCreatedAt())
@@ -34,7 +35,6 @@ public class AdminDTO {
                     .firstName(entity.getFirstName())
                     .middleName(entity.getMiddleName())
                     .lastName(entity.getLastName())
-                    .auth(null == entity.getAuth() ? null : AuthDTO.MeDTO.fromEntity(entity.getAuth()))
                     .build();
         }
     }

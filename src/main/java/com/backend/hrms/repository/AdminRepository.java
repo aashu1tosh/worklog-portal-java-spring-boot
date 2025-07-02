@@ -9,6 +9,6 @@ import com.backend.hrms.entity.AdminEntity;
 
 @Repository
 public interface AdminRepository extends JpaRepository<AdminEntity, Long> {
-    Page<AdminEntity> findByNameContainingIgnoreCase(String search, Pageable pageable);
+    Page<AdminEntity> findByFirstNameContainingIgnoreCase(String search, Pageable pageable);
 
 }

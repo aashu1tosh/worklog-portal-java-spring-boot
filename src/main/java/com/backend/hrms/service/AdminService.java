@@ -35,7 +35,7 @@ public class AdminService {
         if (search == null || search.trim().isEmpty()) {
             return adminRepository.findAll(pageable);
         } else {
-            return adminRepository.findByNameContainingIgnoreCase(search, pageable);
+            return adminRepository.findByFirstNameContainingIgnoreCase(search, pageable);
         }
     }
 }

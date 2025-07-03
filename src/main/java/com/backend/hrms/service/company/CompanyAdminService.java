@@ -1,5 +1,7 @@
 package com.backend.hrms.service.company;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.backend.hrms.dto.company.CompanyAdminDTO;
@@ -20,13 +22,21 @@ public class CompanyAdminService {
 
     public void register(CompanyAdminDTO.RegisterDTO data) {
         CompanyAdminEntity companyAdminEntity = CompanyAdminEntity.builder()
-            .firstName(data.getFirstName())
-            .lastName(data.getLastName())
-            .middleName(data.getMiddleName())
-            .build();
+                .firstName(data.getFirstName())
+                .lastName(data.getLastName())
+                .middleName(data.getMiddleName())
+                .build();
         companyAdminRepository.save(companyAdminEntity);
 
         authService.registerCompanyAdmin(data, companyAdminEntity);
+    }
+
+    public Page<CompanyAdminEntity> get(Pageable pageable, String search) {
+        if (search == null || search.trim().isEmpty()) {
+            return companyAdminRepository.findAll(pageable);
+        } else {
+            return companyAdminRepository.findByFirstNameContainingIgnoreCase(search, pageable);
+        }
     }
 
 }

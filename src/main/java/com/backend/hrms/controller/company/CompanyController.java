@@ -49,10 +49,8 @@ public class CompanyController {
 
     @GetMapping()
     public ApiResponse<PaginatedResponse<CompanyDTO.Response>> get(
-            @AuthenticationPrincipal JwtPayload jwt,
             Pageable pageable,
             @RequestParam(name = "search", defaultValue = "") String search) {
-        System.out.println("Received Pageable: " + pageable);
         Page<CompanyEntity> data = companyService.get(pageable, search);
 
         List<CompanyDTO.Response> company = data.getContent().stream()
@@ -72,7 +70,6 @@ public class CompanyController {
 
     @GetMapping("/{id}")
     public ApiResponse<CompanyDTO.Response> getById(
-            @AuthenticationPrincipal JwtPayload jwt,
             @PathVariable UUID id) {
 
         CompanyEntity companyEntity = companyService.getById(id);
@@ -84,7 +81,6 @@ public class CompanyController {
 
     @PatchMapping("/{id}")
     public ApiResponse<String> updateCompany(
-            @AuthenticationPrincipal JwtPayload jwt,
             @PathVariable UUID id,
             @Valid @RequestBody CompanyDTO.Update body) {
 

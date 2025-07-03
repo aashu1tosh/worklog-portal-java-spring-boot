@@ -40,6 +40,7 @@ public class CompanyAdminController {
 
     @GetMapping()
     @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN')")
+    
     public ApiResponse<String> get(Pageable pageable,
             @RequestParam(name = "search", defaultValue = "") String search) {
 

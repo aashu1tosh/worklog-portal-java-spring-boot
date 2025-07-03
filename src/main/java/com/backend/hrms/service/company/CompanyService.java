@@ -19,9 +19,7 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
 
     public CompanyService(
-            CompanyRepository companyRepository
-
-    ) {
+            CompanyRepository companyRepository) {
         this.companyRepository = companyRepository;
     }
 

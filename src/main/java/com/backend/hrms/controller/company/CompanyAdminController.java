@@ -1,6 +1,7 @@
 package com.backend.hrms.controller.company;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,9 +25,15 @@ public class CompanyAdminController {
         if (!Role.COMPANY_ADMIN.equals(body.getRole()) && !Role.COMPANY_SUPER_ADMIN.equals(body.getRole()))
             throw HttpException.forbidden(
                     "Invalid role: only COMPANY ADMIN or COMPANY SUPER ADMIN roles.");
-        
 
+        return new ApiResponse<>(true, "Company admin registered successfully", "");
+    }
 
+    @GetMapping()
+    @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN')")
+    public ApiResponse<String> get() {
+
+        System.out.println("getting company admin...");
         return new ApiResponse<>(true, "Company admin registered successfully", "");
     }
 }

@@ -3,6 +3,7 @@ package com.backend.hrms.entity.auth;
 import com.backend.hrms.constants.enums.Role;
 import com.backend.hrms.entity.AdminEntity;
 import com.backend.hrms.entity.base.BaseEntity;
+import com.backend.hrms.entity.company.CompanyAdminEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -22,10 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(
-    name = "auth",
-    uniqueConstraints = @UniqueConstraint(columnNames = "email")
-)
+@Table(name = "auth", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -50,4 +48,8 @@ public class AuthEntity extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     @JoinColumn(name = "admin_id", nullable = true)
     private AdminEntity admin;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name = "company_admin_id", nullable = true)
+    private CompanyAdminEntity companyAdmin;
 }

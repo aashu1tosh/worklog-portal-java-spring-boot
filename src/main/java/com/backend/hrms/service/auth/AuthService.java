@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 
 import com.backend.hrms.dto.auth.AdminDTO;
 import com.backend.hrms.dto.auth.AuthDTO;
+import com.backend.hrms.dto.company.CompanyAdminDTO;
 import com.backend.hrms.entity.AdminEntity;
 import com.backend.hrms.entity.auth.AuthEntity;
+import com.backend.hrms.entity.company.CompanyAdminEntity;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.repository.auth.AuthRepository;
 
@@ -49,7 +51,7 @@ public class AuthService {
     }
 
     public void registerAdmin(AdminDTO.RegisterDTO data, AdminEntity adminEntity) {
-        
+
         if (authRepository.existsByEmail(data.getEmail().toLowerCase()))
             throw HttpException.badRequest("Email already exists");
 
@@ -58,6 +60,23 @@ public class AuthService {
         authEntity.setPassword(passwordEncoder.encode(data.getPassword()));
         authEntity.setRole(data.getRole());
         authEntity.setAdmin(adminEntity);
+        authRepository.save(authEntity);
+    }
+
+    public void registerCompanyAdmin(CompanyAdminDTO.RegisterDTO data,
+            CompanyAdminEntity companyAdminEntity) {
+
+        if (authRepository.existsByEmail(data.getEmail().toLowerCase()))
+            throw HttpException.badRequest("Email already exists");
+
+        if (authRepository.existsByPhone(data.getPhone()))
+            throw HttpException.badRequest("Phone number already exists");
+
+        AuthEntity authEntity = new AuthEntity();
+        authEntity.setEmail(data.getEmail().toLowerCase());
+        authEntity.setPassword(passwordEncoder.encode(data.getPassword()));
+        authEntity.setRole(data.getRole());
+        authEntity.setCompanyAdmin(companyAdminEntity);
         authRepository.save(authEntity);
     }
 }

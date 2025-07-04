@@ -3,12 +3,13 @@ package com.backend.hrms.security.jwt;
 import java.util.Map;
 
 import io.jsonwebtoken.Claims;
+import io.micrometer.common.lang.Nullable;
 
 public record JwtPayload(
         String key,
         String id,
         String role,
-        String companyId,
+        @Nullable String companyId,
         Map<String, Object> claims) {
 
     /** Build a JwtPayload from the JWT claims object. */

@@ -1,10 +1,12 @@
 package com.backend.hrms.controller.company;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +22,7 @@ import com.backend.hrms.dto.paginatedResponse.PaginatedResponse;
 import com.backend.hrms.entity.company.CompanyAdminEntity;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
+import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.service.company.CompanyAdminService;
 
 import jakarta.validation.Valid;
@@ -33,9 +36,30 @@ public class CompanyAdminController {
         private final CompanyAdminService companyAdminService;
 
         @PostMapping()
-        @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN')")
-        public ApiResponse<String> register(@Valid @RequestBody CompanyAdminDTO.RegisterDTO body) {
-                System.out.println("Registering company admin: " + body.getFirstName() + " " + body.getLastName());
+        @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN', 'COMPANY_ADMIN', 'COMPANY_SUPER_ADMIN')")
+        public ApiResponse<String> register(@Valid @RequestBody CompanyAdminDTO.RegisterDTO body,
+                        @AuthenticationPrincipal JwtPayload jwt) {
+
+                Role userRole = Role.valueOf(jwt.role());
+                Role requestedRole = body.getRole();
+
+                // Rule 1: only COMPANY_ADMIN or COMPANY_SUPER_ADMIN can be registered
+                if (!Role.COMPANY_ADMIN.equals(requestedRole) && !Role.COMPANY_SUPER_ADMIN.equals(requestedRole)) {
+                        throw HttpException.forbidden("Invalid role: only COMPANY ADMIN or COMPANY SUPER ADMIN roles.");
+                }
+
+                // Rule 2: COMPANY_ADMIN cannot register a COMPANY_SUPER_ADMIN
+                if (Role.COMPANY_ADMIN.equals(userRole) && Role.COMPANY_SUPER_ADMIN.equals(requestedRole)) {
+                        throw HttpException.forbidden("COMPANY_ADMIN cannot register a COMPANY_SUPER_ADMIN.");
+                }
+
+                // Rule 3: COMPANY_ADMIN or COMPANY_SUPER_ADMIN cannot register for another
+                // company
+                if ((Role.COMPANY_ADMIN.equals(userRole) || Role.COMPANY_SUPER_ADMIN.equals(userRole))
+                                && !Objects.equals(jwt.companyId(), body.getCompanyId().toString())) {
+                        throw HttpException.forbidden("You are not allowed to register admin for a different company.");
+                }
+
                 if (!Role.COMPANY_ADMIN.equals(body.getRole()) && !Role.COMPANY_SUPER_ADMIN.equals(body.getRole()))
                         throw HttpException.forbidden(
                                         "Invalid role: only COMPANY ADMIN or COMPANY SUPER ADMIN roles.");

@@ -43,6 +43,19 @@ public class CompanyAdminDTO {
                     .company(entity.getCompany() != null ? CompanyDTO.Response.fromEntity(entity.getCompany()) : null)
                     .build();
         }
+
+        public static Response fromShallowEntity(CompanyAdminEntity entity) {
+            return Response.builder()
+                    .id(entity.getId())
+                    .createdAt(entity.getCreatedAt())
+                    .updatedAt(entity.getUpdatedAt())
+                    .firstName(entity.getFirstName())
+                    .middleName(entity.getMiddleName() != null ? entity.getMiddleName() : null)
+                    .lastName(entity.getLastName())
+                    .auth(null)
+                    .company(entity.getCompany() != null ? CompanyDTO.Response.fromEntity(entity.getCompany()) : null)
+                    .build();
+        }
     }
 
     @Getter

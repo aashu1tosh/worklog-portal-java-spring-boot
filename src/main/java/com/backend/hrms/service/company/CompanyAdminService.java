@@ -1,5 +1,7 @@
 package com.backend.hrms.service.company;
 
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,11 +33,11 @@ public class CompanyAdminService {
         authService.registerCompanyAdmin(data, companyAdminEntity);
     }
 
-    public Page<CompanyAdminEntity> get(Pageable pageable, String search) {
+    public Page<CompanyAdminEntity> get(Pageable pageable, String search, UUID id) {
         if (search == null || search.trim().isEmpty()) {
-            return companyAdminRepository.findAll(pageable);
+            return companyAdminRepository.findAllByCompanyId(pageable, id);
         } else {
-            return companyAdminRepository.findByFirstNameContainingIgnoreCase(search, pageable);
+            return companyAdminRepository.findByFirstNameContainingIgnoreCaseAndCompanyId(search, pageable, id);
         }
     }
 

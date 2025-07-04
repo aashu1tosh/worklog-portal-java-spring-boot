@@ -94,4 +94,26 @@ public class AuthDTO {
                     .build();
         }
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @SuperBuilder
+    public static class BasicAuthResponse extends BaseResponse {
+        private String email;
+        private String role;
+        private String phone;
+
+        public static BasicAuthResponse fromEntity(AuthEntity entity) {
+            return BasicAuthResponse.builder()
+                    .id(entity.getId())
+                    .createdAt(entity.getCreatedAt())
+                    .updatedAt(entity.getUpdatedAt())
+                    .email(entity.getEmail())
+                    .phone(entity.getPhone())
+                    .role(entity.getRole().name())
+                    .build();
+        }
+    }
 }

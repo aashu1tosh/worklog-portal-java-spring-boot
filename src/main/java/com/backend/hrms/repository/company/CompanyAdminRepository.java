@@ -12,6 +12,8 @@ import com.backend.hrms.entity.company.CompanyAdminEntity;
 @Repository
 public interface CompanyAdminRepository extends JpaRepository<CompanyAdminEntity, UUID> {
 
-    Page<CompanyAdminEntity> findByFirstNameContainingIgnoreCase(String search, Pageable pageable);
+    Page<CompanyAdminEntity> findAllByCompanyId(Pageable pageable, UUID id);
+
+    Page<CompanyAdminEntity> findByFirstNameContainingIgnoreCaseAndCompanyId(String search, Pageable pageable, UUID id);
 
 }

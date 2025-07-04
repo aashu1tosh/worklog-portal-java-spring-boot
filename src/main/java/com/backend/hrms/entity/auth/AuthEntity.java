@@ -4,6 +4,7 @@ import com.backend.hrms.constants.enums.Role;
 import com.backend.hrms.entity.AdminEntity;
 import com.backend.hrms.entity.base.BaseEntity;
 import com.backend.hrms.entity.company.CompanyAdminEntity;
+import com.backend.hrms.entity.company.CompanyEmployeeEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -52,4 +53,8 @@ public class AuthEntity extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     @JoinColumn(name = "company_admin_id", nullable = true)
     private CompanyAdminEntity companyAdmin;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name = "company_employee_id", nullable = true)
+    private CompanyEmployeeEntity companyEmployee;
 }

@@ -1,0 +1,36 @@
+package com.backend.hrms.service.company;
+
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
+import com.backend.hrms.dto.company.CompanyEmployeeDTO;
+import com.backend.hrms.entity.company.CompanyEmployeeEntity;
+import com.backend.hrms.repository.company.CompanyEmployeeRepository;
+import com.backend.hrms.service.auth.AuthService;
+
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+
+@Service
+@Transactional
+@AllArgsConstructor
+public class CompanyEmployeeService {
+
+    private final CompanyEmployeeRepository companyEmployeeRepository;
+    private final AuthService authService;
+    private final CompanyService companyService;
+
+    public void register(CompanyEmployeeDTO.RegisterDTO data, UUID companyId) {
+
+        CompanyEmployeeEntity companyEmployeeEntity = CompanyEmployeeEntity.builder()
+                .firstName(data.getFirstName())
+                .lastName(data.getLastName())
+                .middleName(data.getMiddleName())
+                .company(companyService.getById(companyId))
+                .build();
+        companyEmployeeRepository.save(companyEmployeeEntity);
+
+        authService.registerCompanyEmployee(data, companyEmployeeEntity);
+    }
+}

@@ -73,7 +73,7 @@ public class CompanyAdminDTO {
         @NotBlank(message = "Last Name is required")
         private String lastName;
 
-        @NotBlank(message = "Company is required")
+        @NotNull(message = "Company is required")
         private UUID companyId;
     }
 }

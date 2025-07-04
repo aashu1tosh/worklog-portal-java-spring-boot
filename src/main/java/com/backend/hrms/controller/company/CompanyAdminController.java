@@ -30,40 +30,41 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/company/admin")
 public class CompanyAdminController {
 
-    private final CompanyAdminService companyAdminService;
+        private final CompanyAdminService companyAdminService;
 
-    @PostMapping()
-    @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN')")
-    public ApiResponse<String> register(@Valid @RequestBody CompanyAdminDTO.RegisterDTO body) {
+        @PostMapping()
+        @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN')")
+        public ApiResponse<String> register(@Valid @RequestBody CompanyAdminDTO.RegisterDTO body) {
+                System.out.println("Registering company admin: " + body.getFirstName() + " " + body.getLastName());
+                if (!Role.COMPANY_ADMIN.equals(body.getRole()) && !Role.COMPANY_SUPER_ADMIN.equals(body.getRole()))
+                        throw HttpException.forbidden(
+                                        "Invalid role: only COMPANY ADMIN or COMPANY SUPER ADMIN roles.");
 
-        if (!Role.COMPANY_ADMIN.equals(body.getRole()) && !Role.COMPANY_SUPER_ADMIN.equals(body.getRole()))
-            throw HttpException.forbidden(
-                    "Invalid role: only COMPANY ADMIN or COMPANY SUPER ADMIN roles.");
+                companyAdminService.register(body);
+                return new ApiResponse<>(true, "Company admin registered successfully", "");
+        }
 
-        return new ApiResponse<>(true, "Company admin registered successfully", "");
-    }
+        @GetMapping("/{id}")
+        @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN', 'COMPANY_ADMIN', 'COMPANY_SUPER_ADMIN')")
+        public ApiResponse<PaginatedResponse<CompanyAdminDTO.Response>> get(Pageable pageable,
+                        @PathVariable UUID id,
+                        @RequestParam(name = "search", defaultValue = "") String search) {
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN', 'COMPANY_ADMIN', 'COMPANY_SUPER_ADMIN')")
-    public ApiResponse<PaginatedResponse<CompanyAdminDTO.Response>> get(Pageable pageable,
-            @PathVariable UUID id,
-            @RequestParam(name = "search", defaultValue = "") String search) {
+                Page<CompanyAdminEntity> response = companyAdminService.get(pageable, search, id);
 
-        Page<CompanyAdminEntity> response = companyAdminService.get(pageable, search, id);
+                var data = response.getContent().stream()
+                                .map(CompanyAdminDTO.Response::fromEntity)
+                                .toList();
 
-        var data = response.getContent().stream()
-                .map(CompanyAdminDTO.Response::fromEntity)
-                .toList();
+                PaginatedResponse<CompanyAdminDTO.Response> paginatedResponse = new PaginatedResponse<CompanyAdminDTO.Response>(
+                                data,
+                                new PaginatedResponse.Pagination(
+                                                response.getNumber() + 1,
+                                                response.getSize(),
+                                                response.getTotalElements(),
+                                                response.getTotalPages()));
 
-        PaginatedResponse<CompanyAdminDTO.Response> paginatedResponse = new PaginatedResponse<CompanyAdminDTO.Response>(
-                data,
-                new PaginatedResponse.Pagination(
-                        response.getNumber() + 1,
-                        response.getSize(),
-                        response.getTotalElements(),
-                        response.getTotalPages()));
-
-        return new ApiResponse<PaginatedResponse<CompanyAdminDTO.Response>>(true, Messages.SUCCESS,
-                paginatedResponse);
-    }
+                return new ApiResponse<PaginatedResponse<CompanyAdminDTO.Response>>(true, Messages.SUCCESS,
+                                paginatedResponse);
+        }
 }

@@ -103,6 +103,12 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.METHOD_NOT_ALLOWED, "HTTP method not allowed.");
     }
 
+    @ExceptionHandler(jakarta.validation.UnexpectedTypeException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUnexpectedType(jakarta.validation.UnexpectedTypeException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST,
+                "There was an issue with the information you provided. Please check all fields and try again.");
+    }
+
     // Fallback for any unhandled exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Map<String, Object>>> handleUnhandled(Exception ex) {

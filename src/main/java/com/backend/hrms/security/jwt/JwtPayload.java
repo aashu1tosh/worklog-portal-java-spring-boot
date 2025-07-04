@@ -8,8 +8,8 @@ public record JwtPayload(
         String key,
         String id,
         String role,
-        Map<String, Object> claims // keep the raw claims if you like
-) {
+        String companyId,
+        Map<String, Object> claims) {
 
     /** Build a JwtPayload from the JWT claims object. */
     public static JwtPayload from(Claims c) {
@@ -17,7 +17,8 @@ public record JwtPayload(
         String id = c.get("id", String.class);
         String role = c.get("role", String.class);
         String key = c.get("key", String.class);
+        String companyId = c.get("companyId", String.class);
 
-        return new JwtPayload(key, id, role, c);
+        return new JwtPayload(key, id, role, companyId, c);
     }
 }

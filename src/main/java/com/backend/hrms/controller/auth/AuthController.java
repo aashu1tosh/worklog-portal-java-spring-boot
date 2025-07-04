@@ -2,6 +2,7 @@ package com.backend.hrms.controller.auth;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -90,15 +91,17 @@ public class AuthController {
 
         LoginLogEntity log = loginLogService.saveLoginLog(loginLogRequestDto);
 
-        String accessToken = jwtService.generateAccessToken(Map.of(
-                "key", log.getId().toString(),
-                "id", authEntity.getId(),
-                "role", authEntity.getRole()));
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("key", log.getId().toString());
+        claims.put("id", authEntity.getId());
+        claims.put("role", authEntity.getRole());
 
-        String refreshToken = jwtService.generateRefreshToken(Map.of(
-                "key", log.getId().toString(),
-                "id", authEntity.getId(),
-                "role", authEntity.getRole()));
+        if (authEntity.getCompanyAdmin() != null && authEntity.getCompanyAdmin().getCompany() != null) {
+            claims.put("companyId", authEntity.getCompanyAdmin().getCompany().getId().toString());
+        }
+        String accessToken = jwtService.generateAccessToken(claims);
+
+        String refreshToken = jwtService.generateRefreshToken(claims);
 
         boolean cookieSecure = !"DEVELOPMENT".equalsIgnoreCase(envName);
         ResponseCookie accessCookie = ResponseCookie
@@ -199,16 +202,22 @@ public class AuthController {
                 UUID key = UUID.fromString(claims.get("key", String.class));
                 loginLogService.isLoggedIn(key);
 
-                // valid so generate new tokens
-                String accessToken = jwtService.generateAccessToken(Map.of(
-                        "key", key.toString(),
-                        "id", claims.get("id", String.class),
-                        "role", claims.get("role", String.class)));
+                // prepare claims for access token
+                Map<String, Object> newClaims = new HashMap<>();
+                newClaims.put("key", key.toString());
+                newClaims.put("id", claims.get("id", String.class));
+                newClaims.put("role", claims.get("role", String.class));
 
-                String newRefreshToken = jwtService.generateRefreshToken(Map.of(
-                        "key", key.toString(),
-                        "id", claims.get("id", String.class),
-                        "role", claims.get("role", String.class)));
+                // include companyId if it exists
+                String companyId = claims.get("companyId", String.class);
+                if (companyId != null) {
+                    newClaims.put("companyId", companyId);
+                }
+
+                // valid so generate new tokens
+                String accessToken = jwtService.generateAccessToken(newClaims);
+
+                String newRefreshToken = jwtService.generateRefreshToken(newClaims);
 
                 boolean cookieSecure = !"DEVELOPMENT".equalsIgnoreCase(envName);
 

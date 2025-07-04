@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(AuthenticationException ex) {
         ApiResponse<Void> body = new ApiResponse<>(false,
-                "Authentication Required: Please provide valid credentials.", null);
+                "You are not authorized for this process.", null);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler({EntityNotFoundException.class, NoSuchElementException.class})
+    @ExceptionHandler({ EntityNotFoundException.class, NoSuchElementException.class })
     public ResponseEntity<ApiResponse<Void>> handleNotFound(RuntimeException ex) {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
@@ -100,7 +100,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiResponse<Void>> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
-        return buildResponse(HttpStatus.METHOD_NOT_ALLOWED, "HTTP method not supported.");
+        return buildResponse(HttpStatus.METHOD_NOT_ALLOWED, "HTTP method not allowed.");
     }
 
     // Fallback for any unhandled exceptions
@@ -109,8 +109,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> data = exposeErrors
                 ? Map.of(
                         "orgError", ex.getClass().getName(),
-                        "stackTrace", getStackTrace(ex)
-                )
+                        "stackTrace", getStackTrace(ex))
                 : Map.of();
 
         ApiResponse<Map<String, Object>> body = new ApiResponse<>(false, "Internal server error", data);

@@ -2,6 +2,7 @@ package com.backend.hrms.dto.auth;
 
 import com.backend.hrms.dto.baseEntityResponse.BaseResponse;
 import com.backend.hrms.dto.company.CompanyAdminDTO;
+import com.backend.hrms.dto.company.CompanyEmployeeDTO;
 import com.backend.hrms.entity.auth.AuthEntity;
 
 import jakarta.validation.constraints.Email;
@@ -39,6 +40,7 @@ public class AuthDTO {
         private String phone;
         private AdminDTO.Response admin;
         private CompanyAdminDTO.Response companyAdmin;
+        private CompanyEmployeeDTO.Response companyEmployee;
 
         public static MeDTO fromEntity(AuthEntity entity) {
             return MeDTO.builder()
@@ -51,6 +53,9 @@ public class AuthDTO {
                     .admin(entity.getAdmin() != null ? AdminDTO.Response.fromEntity(entity.getAdmin()) : null)
                     .companyAdmin(entity.getCompanyAdmin() != null
                             ? CompanyAdminDTO.Response.fromShallowEntity(entity.getCompanyAdmin())
+                            : null)
+                    .companyEmployee(entity.getCompanyEmployee() != null
+                            ? CompanyEmployeeDTO.Response.fromShallowEntity(entity.getCompanyEmployee())
                             : null)
                     .build();
         }

@@ -44,28 +44,3 @@ public class CompanyAdminService {
     }
 
 }
-
-// companyId
-// :
-// "92e89094-5d59-4cb8-bff3-0056f70ed348"
-// email
-// :
-// "nepal@nepal.com"
-// firstName
-// :
-// "whoami"
-// lastName
-// :
-// "nepal"
-// middleName
-// :
-// ""
-// password
-// :
-// "Admin@123"
-// phone
-// :
-// "9841456852"
-// role
-// :
-// "COMPANY_SUPER_ADMIN"

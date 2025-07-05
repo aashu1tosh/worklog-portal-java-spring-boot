@@ -2,6 +2,8 @@ package com.backend.hrms.service.company;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.backend.hrms.dto.company.CompanyEmployeeDTO;
@@ -32,5 +34,13 @@ public class CompanyEmployeeService {
         companyEmployeeRepository.save(companyEmployeeEntity);
 
         authService.registerCompanyEmployee(data, companyEmployeeEntity);
+    }
+
+    public Page<CompanyEmployeeEntity> get(Pageable pageable, String search, UUID id) {
+        if (search == null || search.trim().isEmpty()) {
+            return companyEmployeeRepository.findAllByCompanyId(pageable, id);
+        } else {
+            return companyEmployeeRepository.findByFirstNameContainingIgnoreCaseAndCompanyId(search, pageable, id);
+        }
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.hrms.dto.apiResponse.ApiResponse;
-import com.backend.hrms.dto.company.CompanyAdminDTO;
 import com.backend.hrms.dto.company.CompanyEmployeeDTO;
 import com.backend.hrms.dto.paginatedResponse.PaginatedResponse;
 import com.backend.hrms.entity.company.CompanyEmployeeEntity;

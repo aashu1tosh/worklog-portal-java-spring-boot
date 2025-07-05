@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +22,6 @@ import com.backend.hrms.dto.company.CompanyDTO;
 import com.backend.hrms.dto.paginatedResponse.PaginatedResponse;
 import com.backend.hrms.entity.company.CompanyEntity;
 import com.backend.hrms.helpers.Messages;
-import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.service.company.CompanyService;
 
 import jakarta.validation.Valid;
@@ -40,9 +38,7 @@ public class CompanyController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<String> createCompany(@Valid @RequestBody CompanyDTO.Create body,
-            @AuthenticationPrincipal JwtPayload jwt1) {
-
+    public ApiResponse<String> createCompany(@Valid @RequestBody CompanyDTO.Create body) {
         companyService.create(body);
         return new ApiResponse<>(true, Messages.CREATED, "");
     }

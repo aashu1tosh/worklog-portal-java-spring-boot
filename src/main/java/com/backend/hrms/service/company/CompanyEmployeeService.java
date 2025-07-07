@@ -43,4 +43,9 @@ public class CompanyEmployeeService {
             return companyEmployeeRepository.findByFirstNameContainingIgnoreCaseAndCompanyId(search, pageable, id);
         }
     }
+
+    public CompanyEmployeeEntity getById(UUID id) {
+        return companyEmployeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Company employee not found with id: " + id));
+    }
 }

@@ -1,9 +1,14 @@
 package com.backend.hrms.entity.company;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.backend.hrms.entity.base.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,4 +34,7 @@ public class CompanyEntity extends BaseEntity {
 
     @Column(name = "contact_email")
     private String email;
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CompanyEmployeeEntity> companyEmployees = new ArrayList<>();
 }

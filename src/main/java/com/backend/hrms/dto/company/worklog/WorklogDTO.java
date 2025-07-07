@@ -61,8 +61,8 @@ public class WorklogDTO {
     @SuperBuilder
     public static class RegisterDTO {
 
-        @NotBlank(message = "E‑mail is required")
-        private String todaysWork;
+        @NotBlank(message = "Task completed is required")
+        private String taskCompleted;
 
         @NotBlank(message = "Password is required")
         private String taskPlanned;

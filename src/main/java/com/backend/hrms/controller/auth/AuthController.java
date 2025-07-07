@@ -99,6 +99,12 @@ public class AuthController {
         if (authEntity.getCompanyAdmin() != null && authEntity.getCompanyAdmin().getCompany() != null) {
             claims.put("companyId", authEntity.getCompanyAdmin().getCompany().getId().toString());
         }
+        if (authEntity.getCompanyEmployee() != null && authEntity.getCompanyEmployee().getCompany() != null) {
+            claims.put("companyId", authEntity.getCompanyEmployee().getCompany().getId().toString());
+        }
+        if (authEntity.getCompanyEmployee() != null) {
+            claims.put("companyId", authEntity.getCompanyEmployee().getCompany().getId().toString());
+        }
         String accessToken = jwtService.generateAccessToken(claims);
 
         String refreshToken = jwtService.generateRefreshToken(claims);

@@ -10,6 +10,7 @@ public record JwtPayload(
         String id,
         String role,
         @Nullable String companyId,
+        @Nullable String employeeId,
         Map<String, Object> claims) {
 
     /** Build a JwtPayload from the JWT claims object. */
@@ -19,7 +20,8 @@ public record JwtPayload(
         String role = c.get("role", String.class);
         String key = c.get("key", String.class);
         String companyId = c.get("companyId", String.class);
+        String employeeId = c.get("employeeId", String.class);
 
-        return new JwtPayload(key, id, role, companyId, c);
+        return new JwtPayload(key, id, role, companyId, employeeId, c);
     }
 }

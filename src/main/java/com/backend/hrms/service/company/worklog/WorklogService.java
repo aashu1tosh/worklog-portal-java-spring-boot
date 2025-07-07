@@ -1,0 +1,53 @@
+package com.backend.hrms.service.company.worklog;
+
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+
+import com.backend.hrms.dto.company.worklog.WorklogDTO;
+import com.backend.hrms.entity.company.worklog.WorklogEntity;
+import com.backend.hrms.exception.HttpException;
+import com.backend.hrms.helpers.utils.UUIDUtils;
+import com.backend.hrms.repository.company.worklog.WorklogRepository;
+import com.backend.hrms.security.jwt.JwtPayload;
+import com.backend.hrms.service.company.CompanyEmployeeService;
+
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+
+@Service
+@Transactional
+@AllArgsConstructor
+public class WorklogService {
+
+    private final WorklogRepository worklogRepository;
+    private final CompanyEmployeeService companyEmployeeCompanyService;
+
+    public void create(WorklogDTO.RegisterDTO data, JwtPayload jwt) {
+        var worklogEntity = new WorklogEntity();
+        worklogEntity.setTaskCompleted(data.getTaskCompleted());
+        worklogEntity.setTaskPlanned(data.getTaskPlanned());
+        worklogEntity.setChallengingTask(data.getChallengingTask());
+        worklogEntity.setCompanyEmployee(companyEmployeeCompanyService.getById(UUIDUtils.validateId(jwt.employeeId())));
+
+        worklogRepository.save(worklogEntity);
+    }
+
+    public WorklogEntity getById(String id) {
+        return worklogRepository.findById(UUIDUtils.validateId(id))
+                .orElseThrow(() -> HttpException.badRequest("Worklog not found with id: " + id));
+    }
+
+    public Page<WorklogEntity> get(Pageable pageable, JwtPayload jwt) {
+
+        if(jwt.employeeId() == null)
+            return worklogRepository.findByCompanyId(pageable,
+                UUIDUtils.validateId(jwt.employeeId()));
+    }
+
+
+    public Page<WorklogEntity> getByEmployee(String id) {
+        return worklogRepository.findById(UUIDUtils.validateId(id))
+                .orElseThrow(() -> HttpException.badRequest("Worklog not found with employee id: " + id));
+    }
+}

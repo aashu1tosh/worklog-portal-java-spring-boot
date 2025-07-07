@@ -1,9 +1,8 @@
 package com.backend.hrms.dto.company.worklog;
 
-import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.baseEntityResponse.BaseResponse;
-import com.backend.hrms.dto.company.CompanyDTO;
-import com.backend.hrms.entity.company.CompanyAdminEntity;
+import com.backend.hrms.dto.company.CompanyEmployeeDTO;
+import com.backend.hrms.entity.company.worklog.WorklogEntity;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -20,36 +19,22 @@ public class WorklogDTO {
     @AllArgsConstructor
     @SuperBuilder
     public static class Response extends BaseResponse {
-        private String firstName;
-        private String middleName;
-        private String lastName;
-        private AuthDTO.BasicAuthResponse auth;
-        private CompanyDTO.Response company;
+        private String taskCompleted;
+        private String taskPlanned;
+        private String challengingTask;
+        private CompanyEmployeeDTO.Response companyEmployee;
 
-        public static Response fromEntity(CompanyAdminEntity entity) {
+        public static Response fromEntity(WorklogEntity entity) {
             return Response.builder()
                     .id(entity.getId())
                     .createdAt(entity.getCreatedAt())
                     .updatedAt(entity.getUpdatedAt())
-                    .firstName(entity.getFirstName())
-                    .middleName(entity.getMiddleName() != null ? entity.getMiddleName() : null)
-                    .lastName(entity.getLastName())
-                    .auth(entity.getAuth() != null ? AuthDTO.BasicAuthResponse.fromEntity(entity.getAuth())
+                    .taskCompleted(entity.getTaskCompleted())
+                    .challengingTask(entity.getChallengingTask() != null ? entity.getChallengingTask() : null)
+                    .taskPlanned(entity.getTaskPlanned())
+                    .companyEmployee(entity.getCompanyEmployee() != null
+                            ? CompanyEmployeeDTO.Response.fromEntity(entity.getCompanyEmployee())
                             : null)
-                    .company(entity.getCompany() != null ? CompanyDTO.Response.fromEntity(entity.getCompany()) : null)
-                    .build();
-        }
-
-        public static Response fromShallowEntity(CompanyAdminEntity entity) {
-            return Response.builder()
-                    .id(entity.getId())
-                    .createdAt(entity.getCreatedAt())
-                    .updatedAt(entity.getUpdatedAt())
-                    .firstName(entity.getFirstName())
-                    .middleName(entity.getMiddleName() != null ? entity.getMiddleName() : null)
-                    .lastName(entity.getLastName())
-                    .auth(null)
-                    .company(entity.getCompany() != null ? CompanyDTO.Response.fromEntity(entity.getCompany()) : null)
                     .build();
         }
     }
@@ -64,7 +49,7 @@ public class WorklogDTO {
         @NotBlank(message = "Task completed is required")
         private String taskCompleted;
 
-        @NotBlank(message = "Password is required")
+        @NotBlank(message = "Task Planned is required")
         private String taskPlanned;
 
         private String challengingTask;

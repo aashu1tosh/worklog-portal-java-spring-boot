@@ -39,15 +39,15 @@ public class WorklogService {
     }
 
     public Page<WorklogEntity> get(Pageable pageable, JwtPayload jwt) {
-
-        if(jwt.employeeId() == null)
-            return worklogRepository.findByCompanyId(pageable,
-                UUIDUtils.validateId(jwt.employeeId()));
+        throw HttpException.internalServerError(
+                "Method not implemented yet. Please check the service implementation.");
+        // if(jwt.employeeId() == null)
+        // return worklogRepository.findByCompanyId(pageable,
+        // UUIDUtils.validateId(jwt.employeeId()));
     }
 
-
     public Page<WorklogEntity> getByEmployee(String id) {
-        return worklogRepository.findById(UUIDUtils.validateId(id))
-                .orElseThrow(() -> HttpException.badRequest("Worklog not found with employee id: " + id));
+        throw HttpException.internalServerError(
+                "Method not implemented yet. Please check the service implementation.");
     }
 }

@@ -38,6 +38,9 @@ public class WorklogService {
     public void update(UUID id, WorklogDTO.UpdateDTO data, JwtPayload jwt) {
         var worklogEntity = this.getById(id, jwt);
 
+        if (!worklogEntity.isToday())
+            throw HttpException.badRequest("You cannot update yesterday's worklog.");
+
         if (data.getTaskCompleted() != null && !data.getTaskCompleted().isBlank())
             worklogEntity.setTaskCompleted(data.getTaskCompleted());
 

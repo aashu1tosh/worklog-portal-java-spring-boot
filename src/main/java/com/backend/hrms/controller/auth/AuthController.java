@@ -103,7 +103,7 @@ public class AuthController {
             claims.put("companyId", authEntity.getCompanyEmployee().getCompany().getId().toString());
         }
         if (authEntity.getCompanyEmployee() != null) {
-            claims.put("employee", authEntity.getCompanyEmployee().getId().toString());
+            claims.put("employeeId", authEntity.getCompanyEmployee().getId().toString());
         }
         String accessToken = jwtService.generateAccessToken(claims);
 

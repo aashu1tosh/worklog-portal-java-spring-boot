@@ -1,5 +1,7 @@
 package com.backend.hrms.entity.company.worklog;
 
+import java.time.LocalDate;
+
 import com.backend.hrms.entity.base.BaseEntity;
 import com.backend.hrms.entity.company.CompanyEmployeeEntity;
 
@@ -8,6 +10,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,4 +38,17 @@ public class WorklogEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_employee_id", nullable = false)
     private CompanyEmployeeEntity companyEmployee;
+
+    @Transient
+    private boolean isToday;
+
+    @PostLoad
+    public void calculateIsToday() {
+        if (getCreatedAt() != null) {
+            this.isToday = getCreatedAt()
+                .atZone(java.time.ZoneId.systemDefault())
+                .toLocalDate()
+                .isEqual(LocalDate.now());
+        }
+    }
 }

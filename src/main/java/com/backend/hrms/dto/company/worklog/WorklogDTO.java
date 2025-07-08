@@ -22,6 +22,7 @@ public class WorklogDTO {
         private String taskCompleted;
         private String taskPlanned;
         private String challengingTask;
+        private boolean isToday;
         private CompanyEmployeeDTO.Response companyEmployee;
 
         public static Response fromEntity(WorklogEntity entity) {
@@ -32,9 +33,10 @@ public class WorklogDTO {
                     .taskCompleted(entity.getTaskCompleted())
                     .challengingTask(entity.getChallengingTask() != null ? entity.getChallengingTask() : null)
                     .taskPlanned(entity.getTaskPlanned())
-                    .companyEmployee(entity.getCompanyEmployee() != null
-                            ? CompanyEmployeeDTO.Response.fromEntity(entity.getCompanyEmployee())
-                            : null)
+                    .isToday(entity.isToday())
+                    // .companyEmployee(entity.getCompanyEmployee() != null
+                    // ? CompanyEmployeeDTO.Response.fromEntity(entity.getCompanyEmployee())
+                    // : null)
                     .build();
         }
     }

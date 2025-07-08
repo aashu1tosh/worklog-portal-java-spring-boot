@@ -54,4 +54,18 @@ public class WorklogDTO {
 
         private String challengingTask;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @SuperBuilder
+    public static class UpdateDTO {
+
+        private String taskCompleted;
+
+        private String taskPlanned;
+
+        private String challengingTask;
+    }
 }

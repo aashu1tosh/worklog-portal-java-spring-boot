@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +37,16 @@ public class WorklogController {
             @AuthenticationPrincipal JwtPayload jwt) {
 
         worklogService.create(body, jwt);
+        return new ApiResponse<>(true, Messages.CREATED, "");
+    }
+
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('COMPANY_EMPLOYEE')")
+    public ApiResponse<String> update(@Valid @RequestBody WorklogDTO.UpdateDTO body,
+            @PathVariable UUID id,
+            @AuthenticationPrincipal JwtPayload jwt) {
+
+        worklogService.update(id, body, jwt);
         return new ApiResponse<>(true, Messages.CREATED, "");
     }
 

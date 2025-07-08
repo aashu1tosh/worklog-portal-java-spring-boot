@@ -35,8 +35,23 @@ public class WorklogService {
         worklogRepository.save(worklogEntity);
     }
 
-    public WorklogEntity getById(String id) {
-        return worklogRepository.findById(UUIDUtils.validateId(id))
+    public void update(UUID id, WorklogDTO.UpdateDTO data, JwtPayload jwt) {
+        var worklogEntity = this.getById(id, jwt);
+
+        if (data.getTaskCompleted() != null && !data.getTaskCompleted().isBlank())
+            worklogEntity.setTaskCompleted(data.getTaskCompleted());
+
+        if (data.getTaskPlanned() != null && !data.getTaskPlanned().isBlank())
+            worklogEntity.setTaskPlanned(data.getTaskPlanned());
+
+        if (data.getChallengingTask() != null && !data.getChallengingTask().isBlank())
+            worklogEntity.setChallengingTask(data.getChallengingTask());
+
+        worklogRepository.save(worklogEntity);
+    }
+
+    public WorklogEntity getById(UUID id, JwtPayload jwt) {
+        return worklogRepository.findById(id, UUIDUtils.validateId(jwt.employeeId()))
                 .orElseThrow(() -> HttpException.badRequest("Worklog not found with id: " + id));
     }
 

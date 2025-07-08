@@ -62,14 +62,26 @@ public class WorklogController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('COMPANY_ADMIN', 'COMPANY_SUPER_ADMIN')")
-    public ApiResponse<WorklogDTO.Response> getByEmployeeId(@AuthenticationPrincipal JwtPayload jwt,
+    public ApiResponse<PaginatedResponse<WorklogDTO.Response>> getByEmployeeId(@AuthenticationPrincipal JwtPayload jwt,
             Pageable pageable,
             @PathVariable UUID id) {
-        // var worklog = worklogService.getByEmployee(id, pageable, jwt);
-        throw HttpException.internalServerError(
-                "Method not implemented yet. Please check the service implementation.");
-        // return new ApiResponse<>(true, Messages.SUCCESS,
-        // WorklogDTO.ResponseDTO.fromEntity(worklog));
+        if (jwt.companyId() == null) {
+            throw HttpException.unauthorized("Unauthorized access. Company ID is missing.");
+        }
+        var worklog = worklogService.getByEmployee(id, pageable, jwt);
+
+        var data = worklog.getContent().stream()
+                .map(WorklogDTO.Response::fromEntity)
+                .toList();
+
+        var paginatedResponse = new PaginatedResponse<WorklogDTO.Response>(
+                data,
+                new PaginatedResponse.Pagination(
+                        worklog.getNumber() + 1,
+                        worklog.getSize(),
+                        worklog.getTotalElements(),
+                        worklog.getTotalPages()));
+        return new ApiResponse<PaginatedResponse<WorklogDTO.Response>>(true, Messages.SUCCESS, paginatedResponse);
     }
 
 }

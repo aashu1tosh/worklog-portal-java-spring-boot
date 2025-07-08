@@ -26,6 +26,14 @@ public class WorklogService {
     private final CompanyEmployeeService companyEmployeeCompanyService;
 
     public void create(WorklogDTO.RegisterDTO data, JwtPayload jwt) {
+
+        var check = worklogRepository.checksIfCanCreateNewWorklog(UUIDUtils.validateId(jwt.employeeId()));
+        System.out.println("🚀 ~ WorklogService ~ void create ~ check: " + check);
+
+        if (check)
+            throw HttpException
+                    .badRequest("You have already created a worklog for today. You cannot create a new one.");
+
         var worklogEntity = new WorklogEntity();
         worklogEntity.setTaskCompleted(data.getTaskCompleted());
         worklogEntity.setTaskPlanned(data.getTaskPlanned());

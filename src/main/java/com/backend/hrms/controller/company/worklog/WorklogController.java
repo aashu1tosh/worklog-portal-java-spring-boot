@@ -72,6 +72,19 @@ public class WorklogController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('COMPANY_EMPLOYEE')")
+    public ApiResponse<WorklogDTO.Response> getById(@AuthenticationPrincipal JwtPayload jwt,
+            @PathVariable UUID id) {
+        var worklog = worklogService.getById(id, jwt);
+
+        return new ApiResponse<WorklogDTO.Response>(
+                true,
+                Messages.SUCCESS,
+                WorklogDTO.Response.fromEntity(worklog));
+
+    }
+
+    @GetMapping("/employee/{id}")
     @PreAuthorize("hasAnyRole('COMPANY_ADMIN', 'COMPANY_SUPER_ADMIN')")
     public ApiResponse<PaginatedResponse<WorklogDTO.Response>> getByEmployeeId(@AuthenticationPrincipal JwtPayload jwt,
             Pageable pageable,

@@ -30,4 +30,11 @@ public interface WorklogRepository extends JpaRepository<WorklogEntity, UUID> {
       """)
   Optional<WorklogEntity> findById(UUID id, UUID employeeId);
 
+  @Query("""
+          SELECT COUNT(w) > 0 FROM WorklogEntity w
+          WHERE w.companyEmployee.id = :employeeId
+            AND w.createdAt = CURRENT_DATE
+      """)
+  boolean checksIfCanCreateNewWorklog(UUID employeeId);
+
 }

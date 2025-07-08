@@ -1,7 +1,7 @@
 package com.backend.hrms.service.company.worklog;
 
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.backend.hrms.dto.company.worklog.WorklogDTO;
@@ -39,11 +39,11 @@ public class WorklogService {
     }
 
     public Page<WorklogEntity> get(Pageable pageable, JwtPayload jwt) {
-        throw HttpException.internalServerError(
-                "Method not implemented yet. Please check the service implementation.");
-        // if(jwt.employeeId() == null)
-        // return worklogRepository.findByCompanyId(pageable,
-        // UUIDUtils.validateId(jwt.employeeId()));
+        if (jwt.employeeId() == null) {
+            throw HttpException.unauthorized("Unauthorized access. Employee ID is missing.");
+        }
+
+        return worklogRepository.findByCompanyEmployeeId(pageable, UUIDUtils.validateId(jwt.employeeId()));
     }
 
     public Page<WorklogEntity> getByEmployee(String id) {

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.company.worklog.WorklogDTO;
+import com.backend.hrms.dto.paginatedResponse.PaginatedResponse;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
 import com.backend.hrms.security.jwt.JwtPayload;
@@ -36,6 +37,27 @@ public class WorklogController {
 
         worklogService.create(body, jwt);
         return new ApiResponse<>(true, Messages.CREATED, "");
+    }
+
+    @GetMapping()
+    @PreAuthorize("hasAnyRole('COMPANY_EMPLOYEE')")
+    public ApiResponse<PaginatedResponse<WorklogDTO.Response>> get(@AuthenticationPrincipal JwtPayload jwt,
+            Pageable pageable) {
+
+        var worklogs = worklogService.get(pageable, jwt);
+
+        var data = worklogs.getContent().stream()
+                .map(WorklogDTO.Response::fromEntity)
+                .toList();
+
+        var paginatedResponse = new PaginatedResponse<WorklogDTO.Response>(
+                data,
+                new PaginatedResponse.Pagination(
+                        worklogs.getNumber() + 1,
+                        worklogs.getSize(),
+                        worklogs.getTotalElements(),
+                        worklogs.getTotalPages()));
+        return new ApiResponse<>(true, Messages.SUCCESS, paginatedResponse);
     }
 
     @GetMapping("/{id}")

@@ -118,6 +118,10 @@ public class GlobalExceptionHandler {
                         "stackTrace", getStackTrace(ex))
                 : Map.of();
 
+        System.err.println("Unhandled Exception: " + ex.getClass().getName());
+
+        System.err.println("Message: " + ex.getMessage());
+
         ApiResponse<Map<String, Object>> body = new ApiResponse<>(false, "Internal server error", data);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }

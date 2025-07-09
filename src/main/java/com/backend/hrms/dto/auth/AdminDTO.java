@@ -34,7 +34,7 @@ public class AdminDTO {
                     .firstName(entity.getFirstName())
                     .middleName(entity.getMiddleName())
                     .lastName(entity.getLastName())
-                    .auth(AuthDTO.MeDTO.fromEntityShallow(entity.getAuth()))
+                    .auth(entity.getAuth() != null ? AuthDTO.MeDTO.fromEntityShallow(entity.getAuth()) : null)
                     .build();
         }
     }

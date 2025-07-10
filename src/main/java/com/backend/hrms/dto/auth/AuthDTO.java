@@ -33,6 +33,19 @@ public class AuthDTO {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
+    public static class UpdatePasswordDTO {
+        @NotBlank(message = "Old Password is required")
+        private String oldPassword;
+
+        @NotBlank(message = "New Password is required")
+        private String newPassword;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     @SuperBuilder
     public static class MeDTO extends BaseResponse {
         private String email;

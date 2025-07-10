@@ -1,4 +1,7 @@
 runDev:
+	mvn clean spring-boot:run
+
+runDebugDev:
 	mvn clean spring-boot:run -e
 
 runCleanInstallDev:

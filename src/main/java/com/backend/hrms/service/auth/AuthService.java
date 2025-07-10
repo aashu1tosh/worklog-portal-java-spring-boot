@@ -98,4 +98,17 @@ public class AuthService {
         authEntity.setCompanyEmployee(companyEmployeeEntity);
         authRepository.save(authEntity);
     }
+
+    public void updatePassword(AuthDTO.UpdatePasswordDTO data, UUID id) {
+
+        var authEntity = authRepository.findById(id)
+                .orElseThrow(() -> HttpException.notFound("User not found"));
+                
+        if (!passwordEncoder.matches(data.getOldPassword(), authEntity.getPassword())) {
+            throw HttpException.badRequest("Old password is incorrect");
+        }
+
+        authEntity.setPassword(passwordEncoder.encode(data.getNewPassword()));
+        authRepository.save(authEntity);
+    }
 }

@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
 import com.backend.hrms.helpers.auth.DeviceDetector;
 import com.backend.hrms.helpers.auth.GetClientsIp;
+import com.backend.hrms.helpers.utils.UUIDUtils;
 import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.security.jwt.JwtService;
 import com.backend.hrms.service.auth.AuthService;
@@ -259,6 +261,35 @@ public class AuthController {
             throw HttpException.badRequest(Messages.TOKEN_REFRESH_FAILED);
 
         return new ApiResponse<String>(true, Messages.TOKEN_REFRESH, "");
+    }
+
+    @PatchMapping("/update-password")
+    public ApiResponse<String> updatePassword(@Valid @RequestBody AuthDTO.UpdatePasswordDTO body,
+            @AuthenticationPrincipal JwtPayload jwt, HttpServletResponse response) {
+
+        authService.updatePassword(body, UUIDUtils.validateId(jwt.id()));
+        loginLogService.updateLogoutTime(UUID.fromString(jwt.key()));
+        ResponseCookie accessCookie = ResponseCookie
+                .from("accessToken", "")
+                .httpOnly(true)
+                .secure(!"DEVELOPMENT".equalsIgnoreCase(envName))
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie
+                .from("refreshToken", "")
+                .httpOnly(true)
+                .secure(!"DEVELOPMENT".equalsIgnoreCase(envName))
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+        return new ApiResponse<>(true, "Password updated successfully", "");
     }
 
     private String resolveRefreshToken(HttpServletRequest req) {

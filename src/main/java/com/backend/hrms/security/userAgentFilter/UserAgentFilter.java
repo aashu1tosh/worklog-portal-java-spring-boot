@@ -1,4 +1,3 @@
-
 package com.backend.hrms.security.userAgentFilter;
 
 import java.io.IOException;
@@ -16,6 +15,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.lang.NonNull;
+
 
 @Component
 public class UserAgentFilter extends OncePerRequestFilter {
@@ -30,7 +31,9 @@ public class UserAgentFilter extends OncePerRequestFilter {
             HttpMethod.PUT);
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain)
+
             throws ServletException, IOException {
 
         HttpMethod requestMethod = HttpMethod.valueOf(request.getMethod());

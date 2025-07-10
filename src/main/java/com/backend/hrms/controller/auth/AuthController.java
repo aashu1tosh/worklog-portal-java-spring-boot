@@ -269,6 +269,8 @@ public class AuthController {
 
         authService.updatePassword(body, UUIDUtils.validateId(jwt.id()));
         loginLogService.updateLogoutTime(UUID.fromString(jwt.key()));
+        loginLogService.asyncUpdateLogoutTime(UUID.fromString(jwt.id()));
+
         ResponseCookie accessCookie = ResponseCookie
                 .from("accessToken", "")
                 .httpOnly(true)

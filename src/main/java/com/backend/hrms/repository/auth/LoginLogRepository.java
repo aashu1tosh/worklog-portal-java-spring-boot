@@ -20,7 +20,11 @@ public interface LoginLogRepository extends JpaRepository<LoginLogEntity, UUID> 
 
     Page<LoginLogEntity> findAllByAuthId(UUID authId, Pageable pageable);
 
-    @Query("SELECT l FROM LoginLogEntity l WHERE l.authId = :authId AND l.logout IS NULL")
+    @Query("""
+                SELECT l FROM LoginLogEntity l
+                WHERE l.auth.id = :authId
+                  AND l.logOutTime IS NULL
+            """)
     List<LoginLogEntity> findLoggedInSessionsByAuthId(@Param("authId") UUID authId);
 
     Optional<LoginLogEntity> findByIdAndAuthId(UUID id, UUID authId);

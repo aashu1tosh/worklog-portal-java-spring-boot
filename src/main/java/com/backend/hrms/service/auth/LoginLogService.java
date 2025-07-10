@@ -1,11 +1,11 @@
 package com.backend.hrms.service.auth;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.backend.hrms.dto.auth.LoginLogDTO;
@@ -33,7 +33,7 @@ public class LoginLogService {
                                 .badRequest("User not found" + loginLogRequestDto.getAuthId()));
 
         LoginLogEntity loginLogEntity = LoginLogEntity.builder()
-                .loginTime(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .loginTime(Instant.now().toString())
                 .clientIp(loginLogRequestDto.getClientIp())
                 .deviceType(loginLogRequestDto.getDeviceType())
                 .os(loginLogRequestDto.getOs())
@@ -49,7 +49,7 @@ public class LoginLogService {
         LoginLogEntity loginLogEntity = loginLogRepository.findById(id)
                 .orElseThrow(() -> HttpException.badRequest("LoginLogEntity not for this user"));
 
-        loginLogEntity.setLogOutTime(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        loginLogEntity.setLogOutTime(Instant.now().toString());
         return loginLogRepository.save(loginLogEntity);
     }
 
@@ -65,12 +65,34 @@ public class LoginLogService {
             throw HttpException.badRequest("Already logged out from this device");
         }
 
-        loginLogEntity.setLogOutTime(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        loginLogEntity.setLogOutTime(Instant.now().toString());
         loginLogRepository.save(loginLogEntity);
     }
 
     public LoginLogEntity isLoggedIn(UUID id) {
-        return loginLogRepository.findById(id)
+        var data = loginLogRepository.findById(id)
                 .orElseThrow(() -> HttpException.notFound("Not Authenticated. Login Again!"));
+
+        if (data.getLogOutTime() != null)
+            throw HttpException.unauthorized("Already logged out from this device");
+
+        return data;
+    }
+
+    @Async
+    public void asyncUpdateLogoutTime(UUID id) {
+        try {
+            var sessions = loginLogRepository.findLoggedInSessionsByAuthId(id);
+
+            for (LoginLogEntity session : sessions) {
+                session.setLogOutTime(Instant.now().toString());
+            }
+
+            // 3. Save all updated sessions
+            loginLogRepository.saveAll(sessions);
+        } catch (Exception e) {
+            // Handle exception if needed
+            System.err.println("Error updating logout time: " + e.getMessage());
+        }
     }
 }

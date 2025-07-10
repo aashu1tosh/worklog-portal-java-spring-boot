@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +22,6 @@ import com.backend.hrms.dto.company.CompanyDTO;
 import com.backend.hrms.dto.paginatedResponse.PaginatedResponse;
 import com.backend.hrms.entity.company.CompanyEntity;
 import com.backend.hrms.helpers.Messages;
-import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.service.company.CompanyService;
 
 import jakarta.validation.Valid;
@@ -40,19 +38,15 @@ public class CompanyController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<String> createCompany(@Valid @RequestBody CompanyDTO.Create body,
-            @AuthenticationPrincipal JwtPayload jwt1) {
-
+    public ApiResponse<String> createCompany(@Valid @RequestBody CompanyDTO.Create body) {
         companyService.create(body);
         return new ApiResponse<>(true, Messages.CREATED, "");
     }
 
     @GetMapping()
     public ApiResponse<PaginatedResponse<CompanyDTO.Response>> get(
-            @AuthenticationPrincipal JwtPayload jwt,
             Pageable pageable,
             @RequestParam(name = "search", defaultValue = "") String search) {
-        System.out.println("Received Pageable: " + pageable);
         Page<CompanyEntity> data = companyService.get(pageable, search);
 
         List<CompanyDTO.Response> company = data.getContent().stream()
@@ -72,7 +66,6 @@ public class CompanyController {
 
     @GetMapping("/{id}")
     public ApiResponse<CompanyDTO.Response> getById(
-            @AuthenticationPrincipal JwtPayload jwt,
             @PathVariable UUID id) {
 
         CompanyEntity companyEntity = companyService.getById(id);
@@ -84,7 +77,6 @@ public class CompanyController {
 
     @PatchMapping("/{id}")
     public ApiResponse<String> updateCompany(
-            @AuthenticationPrincipal JwtPayload jwt,
             @PathVariable UUID id,
             @Valid @RequestBody CompanyDTO.Update body) {
 

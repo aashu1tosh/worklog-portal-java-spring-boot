@@ -3,6 +3,7 @@ package com.backend.hrms.security.jwt;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,7 +22,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.NonNull;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -36,42 +36,65 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             @NonNull HttpServletRequest req,
             @NonNull HttpServletResponse res,
-            @NonNull FilterChain chain) throws HttpException, IOException, ServletException {
+            @NonNull FilterChain chain) throws ServletException, IOException {
 
-        String token = resolveAccessToken(req);
-        if (token != null) {
-            try {
+        try {
+            String token = resolveAccessToken(req);
+
+            if (token != null) {
                 Claims claims = jwt.parseAccessToken(token);
-
-                /* ---- 1. Extract what you need from the token ------------------ */
                 JwtPayload payload = JwtPayload.from(claims);
                 String role = claims.get("role", String.class);
 
-                /* ---- 2. Turn the role(s) into GrantedAuthority --------------- */
-                List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(
-                        role.startsWith("ROLE_") ? role : "ROLE_" + role));
+                List<GrantedAuthority> authorities = List.of(
+                        new SimpleGrantedAuthority(role.startsWith("ROLE_") ? role : "ROLE_" + role));
 
-                /* ---- 3. Build the Authentication object ---------------------- */
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        payload, // principal (user details)
-                        null,
-                        authorities); // authorities for @PreAuthorize, etc.
-
-                /* ---- 4. Put it in the context -------------------------------- */
+                        payload, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(auth);
-
-            } catch (JwtException ex) {
-                System.out.println("~ JwtAuthenticationFilter ~ JWT Exception: " + ex.getMessage());
-                throw HttpException.unauthorized(Messages.TOKEN_EXPIRED);
+            } else {
+                var refreshToken = resolveRefreshToken(req);
+                if (refreshToken != null) {
+                    throw HttpException.unauthorized(Messages.TOKEN_EXPIRED);
+                } else {
+                    throw HttpException.unauthorized(Messages.UNAUTHORIZED);
+                }
             }
-        } else {
-            var refreshToken = resolveRefreshToken(req);
-            if (refreshToken != null) {
-                throw HttpException.unauthorized(Messages.TOKEN_EXPIRED);
-            } else
-                throw HttpException.unauthorized(Messages.UNAUTHORIZED);
+
+            chain.doFilter(req, res);
+        } catch (HttpException ex) {
+            res.setStatus(ex.getStatus().value());
+            res.setContentType("application/json");
+            res.getWriter().write("""
+                    {
+                        "success": false,
+                        "message": "%s",
+                        "data": null
+                    }
+                    """.formatted(ex.getMessage()));
+        } catch (JwtException ex) {
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            res.setContentType("application/json");
+            res.getWriter().write("""
+                    {
+                        "success": false,
+                        "message": "%s",
+                        "data": null
+                    }
+                    """.formatted(Messages.TOKEN_EXPIRED));
+        } catch (Exception ex) {
+            // Catch-all for unexpected errors
+            res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            res.setContentType("application/json");
+            res.getWriter().write("""
+                    {
+                        "success": false,
+                        "message": "An unexpected error occurred",
+                        "data": null
+                    }
+                    """);
+            ex.printStackTrace(); // Optional: log the full stack trace
         }
-        chain.doFilter(req, res);
     }
 
     @Override

@@ -1,12 +1,12 @@
 package com.backend.hrms.dto.auth;
 
-import com.backend.hrms.constants.enums.Role;
 import com.backend.hrms.dto.baseEntityResponse.BaseResponse;
+import com.backend.hrms.dto.company.CompanyAdminDTO;
+import com.backend.hrms.dto.company.CompanyEmployeeDTO;
 import com.backend.hrms.entity.auth.AuthEntity;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,28 +34,12 @@ public class AuthDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class RegisterAdminDTO {
+    public static class UpdatePasswordDTO {
+        @NotBlank(message = "Old Password is required")
+        private String oldPassword;
 
-        @Email(message = "Must be a valid e‑mail address")
-        @NotBlank(message = "E‑mail is required")
-        private String email;
-
-        @NotBlank(message = "Password is required")
-        private String password;
-
-        @NotBlank(message = "Phone number is required")
-        private String phone;
-
-        @NotNull(message = "Role is required")
-        private Role role;
-
-        @NotBlank(message = "First name is required")
-        private String firstName;
-
-        private String middleName;
-
-        @NotBlank(message = "Last name is required")
-        private String lastName;
+        @NotBlank(message = "New Password is required")
+        private String newPassword;
     }
 
     @Getter
@@ -68,6 +52,8 @@ public class AuthDTO {
         private String role;
         private String phone;
         private AdminDTO.Response admin;
+        private CompanyAdminDTO.Response companyAdmin;
+        private CompanyEmployeeDTO.Response companyEmployee;
 
         public static MeDTO fromEntity(AuthEntity entity) {
             return MeDTO.builder()
@@ -78,6 +64,12 @@ public class AuthDTO {
                     .phone(entity.getPhone())
                     .role(entity.getRole().name())
                     .admin(entity.getAdmin() != null ? AdminDTO.Response.fromEntity(entity.getAdmin()) : null)
+                    .companyAdmin(entity.getCompanyAdmin() != null
+                            ? CompanyAdminDTO.Response.fromShallowEntity(entity.getCompanyAdmin())
+                            : null)
+                    .companyEmployee(entity.getCompanyEmployee() != null
+                            ? CompanyEmployeeDTO.Response.fromShallowEntity(entity.getCompanyEmployee())
+                            : null)
                     .build();
         }
 
@@ -91,6 +83,28 @@ public class AuthDTO {
                     .phone(entity.getPhone())
                     .role(entity.getRole().name())
                     .admin(null)
+                    .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @SuperBuilder
+    public static class BasicAuthResponse extends BaseResponse {
+        private String email;
+        private String role;
+        private String phone;
+
+        public static BasicAuthResponse fromEntity(AuthEntity entity) {
+            return BasicAuthResponse.builder()
+                    .id(entity.getId())
+                    .createdAt(entity.getCreatedAt())
+                    .updatedAt(entity.getUpdatedAt())
+                    .email(entity.getEmail())
+                    .phone(entity.getPhone())
+                    .role(entity.getRole().name())
                     .build();
         }
     }

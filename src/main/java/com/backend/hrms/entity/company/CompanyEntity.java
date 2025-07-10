@@ -35,6 +35,7 @@ public class CompanyEntity extends BaseEntity {
     @Column(name = "contact_email")
     private String email;
 
+    @Builder.Default
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CompanyEmployeeEntity> companyEmployees = new ArrayList<>();
 }

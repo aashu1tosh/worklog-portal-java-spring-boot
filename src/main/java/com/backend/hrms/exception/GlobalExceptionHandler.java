@@ -75,7 +75,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException ex) {
-        return buildResponse(HttpStatus.NOT_FOUND, "Data not found.");
+        return buildResponse(HttpStatus.NOT_FOUND, "Resource not found: " + ex.getMessage());
     }
 
     @ExceptionHandler({ EntityNotFoundException.class, NoSuchElementException.class })

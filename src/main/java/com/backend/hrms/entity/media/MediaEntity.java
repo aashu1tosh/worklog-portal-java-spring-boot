@@ -10,6 +10,7 @@ import com.backend.hrms.constants.enums.MediaType;
 import com.backend.hrms.entity.auth.AuthEntity;
 import com.backend.hrms.entity.base.BaseEntity;
 import com.backend.hrms.helpers.utils.PathUtils;
+import com.backend.hrms.helpers.utils.PropertyUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +19,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -47,16 +50,16 @@ public class MediaEntity extends BaseEntity {
     @JoinColumn(name = "auth", nullable = true)
     private AuthEntity auth;
 
-    // @Transient
-    // private String path;
+    @Transient
+    private String path;
 
-    // @PostLoad
-    // public void loadImagePath() {
-    // if (type != null && getId() != null && name != null) {
-    // this.path = "/uploads" + "/" + type.name().toLowerCase() + "/" + getId() +
-    // "/" + name;
-    // }
-    // }
+    @PostLoad
+    public void loadImagePath() {
+        String baseUrl = PropertyUtil.getBaseUrl();
+        if (type != null && getId() != null && name != null) {
+            this.path = baseUrl + "/uploads/media/" + type.name().toLowerCase() + "/" + getId() + "/" + name;
+        }
+    }
 
     public void transferImageFromTempToUploadFolder(String id, MediaType type) {
         Path tempPath = Paths.get(PathUtils.getTempFolderPath(), this.name);

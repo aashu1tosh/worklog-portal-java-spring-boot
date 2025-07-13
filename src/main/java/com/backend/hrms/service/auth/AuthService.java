@@ -52,6 +52,11 @@ public class AuthService {
                 .orElseThrow(() -> HttpException.notFound("Details not found for this user"));
     }
 
+    public AuthEntity checkById(UUID id) {
+        return authRepository.checkById(id)
+                .orElseThrow(() -> HttpException.notFound("User not found"));
+    }
+
     public void registerAdmin(AdminDTO.RegisterDTO data, AdminEntity adminEntity) {
 
         if (authRepository.existsByEmail(data.getEmail().toLowerCase()))
@@ -103,7 +108,7 @@ public class AuthService {
 
         var authEntity = authRepository.findById(id)
                 .orElseThrow(() -> HttpException.notFound("User not found"));
-                
+
         if (!passwordEncoder.matches(data.getOldPassword(), authEntity.getPassword())) {
             throw HttpException.badRequest("Old password is incorrect");
         }

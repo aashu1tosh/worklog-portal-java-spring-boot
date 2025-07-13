@@ -21,7 +21,6 @@ import org.springframework.web.util.WebUtils;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.auth.LoginLogDTO;
-import com.backend.hrms.dto.media.MediaDTO;
 import com.backend.hrms.entity.auth.AuthEntity;
 import com.backend.hrms.entity.auth.LoginLogEntity;
 import com.backend.hrms.exception.HttpException;
@@ -302,13 +301,12 @@ public class AuthController {
     @PatchMapping("/update-profile")
     public ApiResponse<String> updateProfile(@Valid @RequestBody AuthDTO.ProfileUpdateDTO body,
             @AuthenticationPrincipal JwtPayload jwt) {
-
-        if (body.getMedia() != null) {
-            MediaDTO.Response mediaDTO = body.getMedia();
-
-            // assuming uploadFile(String name, String mimeType, MediaType type)
-            mediaService.uploadFile(mediaDTO);
+        var authEntity = authService.checkById(UUIDUtils.validateId(jwt.id()));
+        System.out.println("Updating profile for: reaches this line");
+        if (body.getMedia() != null && !body.getMedia().isEmpty()) {
+            mediaService.uploadMultipleFiles(body.getMedia(), authEntity, "auth");
         }
+
         // authService.updateProfile(body, UUIDUtils.validateId(jwt.id()));
         return new ApiResponse<>(true, "Profile updated successfully", "");
     }

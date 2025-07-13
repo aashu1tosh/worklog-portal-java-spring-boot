@@ -18,9 +18,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PostLoad;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -46,18 +44,19 @@ public class MediaEntity extends BaseEntity {
     private MediaType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "media", nullable = true)
+    @JoinColumn(name = "auth", nullable = true)
     private AuthEntity auth;
 
-    @Transient
-    private String path;
+    // @Transient
+    // private String path;
 
-    @PostLoad
-    public void loadImagePath() {
-        if (type != null && getId() != null && name != null) {
-            this.path = "/uploads" + "/" + type.name().toLowerCase() + "/" + getId() + "/" + name;
-        }
-    }
+    // @PostLoad
+    // public void loadImagePath() {
+    // if (type != null && getId() != null && name != null) {
+    // this.path = "/uploads" + "/" + type.name().toLowerCase() + "/" + getId() +
+    // "/" + name;
+    // }
+    // }
 
     public void transferImageFromTempToUploadFolder(String id, MediaType type) {
         Path tempPath = Paths.get(PathUtils.getTempFolderPath(), this.name);

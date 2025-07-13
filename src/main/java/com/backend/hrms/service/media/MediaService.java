@@ -1,5 +1,6 @@
 package com.backend.hrms.service.media;
 
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -71,9 +72,16 @@ public class MediaService {
             MediaEntity media = uploadFile(mediaData);
 
             try {
-                // Use reflection to set the entity dynamically
-                MediaEntity.class.getDeclaredMethod("set" + capitalize(entityField), entity.getClass())
-                        .invoke(media, entity);
+                // Capitalize the first letter of the entity field to match setter method name
+                String setterName = "set" + capitalize(entityField);
+
+                // Get declared field on MediaEntity to find the actual type (e.g.,
+                // AuthEntity.class)
+                Class<?> fieldType = MediaEntity.class.getDeclaredField(entityField).getType();
+
+                // Use the resolved type to get the setter method
+                Method setter = MediaEntity.class.getMethod(setterName, fieldType);
+                setter.invoke(media, entity);
             } catch (Exception e) {
                 throw HttpException.badRequest("Failed to associate media with entity: " + e.getMessage());
             }
@@ -87,4 +95,5 @@ public class MediaService {
             return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
+
 }

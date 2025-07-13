@@ -1,10 +1,13 @@
 package com.backend.hrms.dto.auth;
 
+import java.util.List;
+
 import com.backend.hrms.dto.baseEntityResponse.BaseResponse;
 import com.backend.hrms.dto.company.CompanyAdminDTO;
 import com.backend.hrms.dto.company.CompanyEmployeeDTO;
 import com.backend.hrms.dto.media.MediaDTO;
 import com.backend.hrms.entity.auth.AuthEntity;
+import com.backend.hrms.entity.media.MediaEntity;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -55,6 +58,7 @@ public class AuthDTO {
         private AdminDTO.Response admin;
         private CompanyAdminDTO.Response companyAdmin;
         private CompanyEmployeeDTO.Response companyEmployee;
+        private List<MediaEntity> media;
 
         public static MeDTO fromEntity(AuthEntity entity) {
             return MeDTO.builder()
@@ -71,6 +75,7 @@ public class AuthDTO {
                     .companyEmployee(entity.getCompanyEmployee() != null
                             ? CompanyEmployeeDTO.Response.fromShallowEntity(entity.getCompanyEmployee())
                             : null)
+                    .media(entity.getMedia())
                     .build();
         }
 
@@ -122,10 +127,10 @@ public class AuthDTO {
         private String middleName;
 
         @NotBlank(message = "Last name is required")
-        private String lastString;
+        private String lastName;
 
         // this is correct as what media controller returns should be here
-        private MediaDTO.Response media;
+        private List<MediaDTO.Response> media;
     }
 
 }

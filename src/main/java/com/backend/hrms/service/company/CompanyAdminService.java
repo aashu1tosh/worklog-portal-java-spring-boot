@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.company.CompanyAdminDTO;
 import com.backend.hrms.entity.company.CompanyAdminEntity;
+import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.repository.company.CompanyAdminRepository;
 import com.backend.hrms.service.auth.AuthService;
 
@@ -43,4 +45,18 @@ public class CompanyAdminService {
         }
     }
 
+    public void update(AuthDTO.ProfileUpdateDTO data, UUID id) {
+        var auth = authService.checkById(id);
+
+        if (auth.getCompanyAdmin().getId() == null) {
+            throw HttpException.notFound("Admin not found for the given ID.");
+        }
+
+        var adminEntity = auth.getCompanyAdmin();
+        adminEntity.setFirstName(data.getFirstName());
+        adminEntity.setLastName(data.getLastName());
+        adminEntity.setMiddleName(data.getMiddleName());
+
+        companyAdminRepository.save(adminEntity);
+    }
 }

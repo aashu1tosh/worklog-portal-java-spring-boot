@@ -30,8 +30,11 @@ import com.backend.hrms.helpers.auth.GetClientsIp;
 import com.backend.hrms.helpers.utils.UUIDUtils;
 import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.security.jwt.JwtService;
+import com.backend.hrms.service.AdminService;
 import com.backend.hrms.service.auth.AuthService;
 import com.backend.hrms.service.auth.LoginLogService;
+import com.backend.hrms.service.company.CompanyAdminService;
+import com.backend.hrms.service.company.CompanyEmployeeService;
 import com.backend.hrms.service.media.MediaService;
 
 import io.jsonwebtoken.Claims;
@@ -51,13 +54,20 @@ public class AuthController {
     private final JwtService jwtService;
     private final LoginLogService loginLogService;
     private final MediaService mediaService;
+    private final AdminService adminService;
+    private final CompanyEmployeeService employeeService;
+    private final CompanyAdminService companyAdminService;
 
     public AuthController(AuthService authService, JwtService jwtService, LoginLogService loginLogService,
-            MediaService mediaService) {
+            MediaService mediaService, AdminService adminService,
+            CompanyEmployeeService employeeService, CompanyAdminService companyAdminService) {
         this.authService = authService;
         this.jwtService = jwtService;
         this.loginLogService = loginLogService;
         this.mediaService = mediaService;
+        this.adminService = adminService;
+        this.employeeService = employeeService;
+        this.companyAdminService = companyAdminService;
     }
 
     @PostMapping("/public/login")
@@ -301,13 +311,33 @@ public class AuthController {
     @PatchMapping("/update-profile")
     public ApiResponse<String> updateProfile(@Valid @RequestBody AuthDTO.ProfileUpdateDTO body,
             @AuthenticationPrincipal JwtPayload jwt) {
-        var authEntity = authService.checkById(UUIDUtils.validateId(jwt.id()));
-        System.out.println("Updating profile for: reaches this line");
         if (body.getMedia() != null && !body.getMedia().isEmpty()) {
+            var authEntity = authService.checkById(UUIDUtils.validateId(jwt.id()));
             mediaService.uploadMultipleFiles(body.getMedia(), authEntity, "auth");
         }
 
-        // authService.updateProfile(body, UUIDUtils.validateId(jwt.id()));
+        String role = jwt.role();
+
+        switch (role) {
+            case "SUDO_ADMIN":
+                adminService.update(body, UUIDUtils.validateId(jwt.id()));
+                break;
+            case "ADMIN":
+                adminService.update(body, UUIDUtils.validateId(jwt.id()));
+                break;
+            case "COMPANY_ADMIN":
+                companyAdminService.update(body, UUIDUtils.validateId(jwt.id()));
+                break;
+            case "COMPANY_SUPER_ADMIN":
+                companyAdminService.update(body, UUIDUtils.validateId(jwt.id()));
+                break;
+            case "COMPANY_EMPLOYEE":
+                employeeService.update(body, UUIDUtils.validateId(jwt.id()));
+                break;
+            default:
+                break;
+        }
+
         return new ApiResponse<>(true, "Profile updated successfully", "");
     }
 

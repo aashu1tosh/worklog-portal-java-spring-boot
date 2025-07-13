@@ -21,6 +21,7 @@ import org.springframework.web.util.WebUtils;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.auth.LoginLogDTO;
+import com.backend.hrms.dto.media.MediaDTO;
 import com.backend.hrms.entity.auth.AuthEntity;
 import com.backend.hrms.entity.auth.LoginLogEntity;
 import com.backend.hrms.exception.HttpException;
@@ -32,6 +33,7 @@ import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.security.jwt.JwtService;
 import com.backend.hrms.service.auth.AuthService;
 import com.backend.hrms.service.auth.LoginLogService;
+import com.backend.hrms.service.media.MediaService;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
@@ -49,11 +51,14 @@ public class AuthController {
     private final AuthService authService;
     private final JwtService jwtService;
     private final LoginLogService loginLogService;
+    private final MediaService mediaService;
 
-    public AuthController(AuthService authService, JwtService jwtService, LoginLogService loginLogService) {
+    public AuthController(AuthService authService, JwtService jwtService, LoginLogService loginLogService,
+            MediaService mediaService) {
         this.authService = authService;
         this.jwtService = jwtService;
         this.loginLogService = loginLogService;
+        this.mediaService = mediaService;
     }
 
     @PostMapping("/public/login")
@@ -292,6 +297,20 @@ public class AuthController {
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
         return new ApiResponse<>(true, "Password updated successfully", "");
+    }
+
+    @PatchMapping("/update-profile")
+    public ApiResponse<String> updateProfile(@Valid @RequestBody AuthDTO.ProfileUpdateDTO body,
+            @AuthenticationPrincipal JwtPayload jwt) {
+
+        if (body.getMedia() != null) {
+            MediaDTO.Response mediaDTO = body.getMedia();
+
+            // assuming uploadFile(String name, String mimeType, MediaType type)
+            mediaService.uploadFile(mediaDTO);
+        }
+        // authService.updateProfile(body, UUIDUtils.validateId(jwt.id()));
+        return new ApiResponse<>(true, "Profile updated successfully", "");
     }
 
     private String resolveRefreshToken(HttpServletRequest req) {

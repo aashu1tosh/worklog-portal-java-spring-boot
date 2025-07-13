@@ -16,6 +16,7 @@ import com.backend.hrms.constants.enums.MediaType;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.media.MediaDTO;
 import com.backend.hrms.exception.HttpException;
+import com.backend.hrms.helpers.utils.PathUtils;
 
 import jakarta.validation.Valid;
 
@@ -23,7 +24,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/media")
 public class MediaController {
 
-    private final String TEMP_UPLOAD_DIR = new File(System.getProperty("user.dir"), "uploads/temp").getAbsolutePath();
+    private final String TEMP_UPLOAD_DIR = PathUtils.getTempFolderPath();
 
     @PostMapping()
     public ApiResponse<List<MediaDTO.Response>> uploadFiles(

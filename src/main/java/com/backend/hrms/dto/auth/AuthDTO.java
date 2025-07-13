@@ -3,6 +3,7 @@ package com.backend.hrms.dto.auth;
 import com.backend.hrms.dto.baseEntityResponse.BaseResponse;
 import com.backend.hrms.dto.company.CompanyAdminDTO;
 import com.backend.hrms.dto.company.CompanyEmployeeDTO;
+import com.backend.hrms.dto.media.MediaDTO;
 import com.backend.hrms.entity.auth.AuthEntity;
 
 import jakarta.validation.constraints.Email;
@@ -108,4 +109,23 @@ public class AuthDTO {
                     .build();
         }
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ProfileUpdateDTO {
+        @NotBlank(message = "First name is required")
+        private String firstName;
+
+        private String middleName;
+
+        @NotBlank(message = "Last name is required")
+        private String lastString;
+
+        // this is correct as what media controller returns should be here
+        private MediaDTO.Response media;
+    }
+
 }

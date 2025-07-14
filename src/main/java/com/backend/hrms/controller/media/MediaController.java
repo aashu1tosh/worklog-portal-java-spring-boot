@@ -29,8 +29,7 @@ public class MediaController {
     @PostMapping()
     public ApiResponse<List<MediaDTO.Response>> uploadFiles(
             @RequestParam("files") MultipartFile[] files,
-            @Valid @ModelAttribute MediaDTO.Upload uploadRequest // Use @ModelAttribute with your DTO
-    ) {
+            @Valid @ModelAttribute MediaDTO.Upload uploadRequest) {
         if (files.length == 0) {
             throw HttpException.badRequest("No files provided for upload");
         }
@@ -41,10 +40,8 @@ public class MediaController {
         File tempDir = new File(TEMP_UPLOAD_DIR);
         if (!tempDir.exists()) {
             // This will now create the directory at the absolute path specified
-            // Ensure the user running the app has permissions to create this directory.
             boolean created = tempDir.mkdirs();
             if (!created) {
-
                 throw HttpException.internalServerError(
                         "Internal Server Error");
             }
@@ -97,7 +94,7 @@ public class MediaController {
             }
         }
 
-        return new ApiResponse<>(true, "Files uploaded successfully to temporary storage.", uploadedFileResponses);
+        return new ApiResponse<>(true, "Files uploaded successfully", uploadedFileResponses);
     }
 
 }

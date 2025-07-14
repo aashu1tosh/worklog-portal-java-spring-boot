@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import com.backend.hrms.constants.enums.MediaType;
 import com.backend.hrms.entity.auth.AuthEntity;
 import com.backend.hrms.entity.base.BaseEntity;
+import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.utils.PathUtils;
 import com.backend.hrms.helpers.utils.PropertyUtil;
 
@@ -72,7 +73,7 @@ public class MediaEntity extends BaseEntity {
             Path targetPath = uploadPath.resolve(this.name);
             Files.move(tempPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to move media file", e);
+            throw HttpException.internalServerError("Failed to move media file" + e.getMessage());
         }
     }
 }

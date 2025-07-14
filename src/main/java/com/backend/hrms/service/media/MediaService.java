@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.backend.hrms.dto.media.MediaDTO;
 import com.backend.hrms.entity.media.MediaEntity;
 import com.backend.hrms.exception.HttpException;
+import com.backend.hrms.helpers.utils.MediaUtils;
 import com.backend.hrms.helpers.utils.PathUtils;
+import com.backend.hrms.helpers.utils.UUIDUtils;
 import com.backend.hrms.repository.media.MediaRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -94,6 +96,30 @@ public class MediaService {
         if (str == null || str.isEmpty())
             return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
+    public void delete(String idString) {
+        var id = UUIDUtils.validateId(idString);
+        MediaEntity media = mediaRepository.findById(id)
+                .orElseThrow(() -> HttpException.notFound("Media not found with id: " + id));
+
+        // Equivalent of transferImageFromUploadTOTempFolder
+        MediaUtils.transferMediaFromUploadToTrashFolder(media.getId(), media.getName(), media.getType());
+
+        mediaRepository.deleteById(id);
+
+    }
+
+    public Boolean deleteMultipleFile(List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return null;
+        }
+
+        for (String id : ids) {
+            delete(id);
+        }
+
+        return true;
     }
 
 }

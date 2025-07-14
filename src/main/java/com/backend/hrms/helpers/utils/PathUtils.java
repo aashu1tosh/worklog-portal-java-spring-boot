@@ -11,4 +11,8 @@ public class PathUtils {
         return new File(System.getProperty("user.dir"), "uploads/media").getAbsolutePath();
     }
 
+    public static String getTrashFolderPath() {
+        return new File(System.getProperty("user.dir"), "uploads/trash").getAbsolutePath();
+    }
+
 }

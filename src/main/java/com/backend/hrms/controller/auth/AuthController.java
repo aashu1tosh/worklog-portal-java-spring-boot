@@ -316,6 +316,10 @@ public class AuthController {
             mediaService.uploadMultipleFiles(body.getMedia(), authEntity, "auth");
         }
 
+        if (body.getDeleteMedia() != null && !body.getDeleteMedia().isEmpty()) {
+            mediaService.deleteMultipleFile(body.getDeleteMedia());
+        }
+
         String role = jwt.role();
 
         switch (role) {

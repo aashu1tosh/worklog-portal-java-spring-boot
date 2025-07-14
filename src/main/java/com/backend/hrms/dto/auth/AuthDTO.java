@@ -134,6 +134,7 @@ public class AuthDTO {
 
         // this is correct as what media controller returns should be here
         private List<MediaDTO.Response> media;
-    }
 
+        private List<String> deleteMedia;
+    }
 }

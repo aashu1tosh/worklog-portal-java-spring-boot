@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.backend.hrms.contracts.auth.IAuthService;
 import com.backend.hrms.dto.auth.AdminDTO;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.company.CompanyAdminDTO;
@@ -21,7 +22,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class AuthService {
+public class AuthService implements IAuthService {
 
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;

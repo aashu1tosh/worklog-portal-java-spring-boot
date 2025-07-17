@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.backend.hrms.contracts.auth.ILoginLogService;
 import com.backend.hrms.dto.auth.LoginLogDTO;
 import com.backend.hrms.entity.auth.AuthEntity;
 import com.backend.hrms.entity.auth.LoginLogEntity;
@@ -16,10 +17,10 @@ import com.backend.hrms.repository.auth.AuthRepository;
 import com.backend.hrms.repository.auth.LoginLogRepository;
 
 @Service
-public class LoginLogService {
+public class LoginLogService implements ILoginLogService {
 
     private final LoginLogRepository loginLogRepository;
-    private final AuthRepository authRepository; // Keep AuthRepository as a dependency
+    private final AuthRepository authRepository;
 
     public LoginLogService(LoginLogRepository loginLogRepository, AuthRepository authRepository) {
         this.loginLogRepository = loginLogRepository;

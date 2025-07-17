@@ -18,6 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.WebUtils;
 
+import com.backend.hrms.contracts.admin.IAdminService;
+import com.backend.hrms.contracts.auth.IAuthService;
+import com.backend.hrms.contracts.auth.ILoginLogService;
+import com.backend.hrms.contracts.company.ICompanyAdminService;
+import com.backend.hrms.contracts.company.ICompanyEmployeeService;
+import com.backend.hrms.contracts.media.IMediaService;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.auth.LoginLogDTO;
@@ -30,12 +36,6 @@ import com.backend.hrms.helpers.auth.GetClientsIp;
 import com.backend.hrms.helpers.utils.UUIDUtils;
 import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.security.jwt.JwtService;
-import com.backend.hrms.service.AdminService;
-import com.backend.hrms.service.auth.AuthService;
-import com.backend.hrms.service.auth.LoginLogService;
-import com.backend.hrms.service.company.CompanyAdminService;
-import com.backend.hrms.service.company.CompanyEmployeeService;
-import com.backend.hrms.service.media.MediaService;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
@@ -50,17 +50,22 @@ public class AuthController {
     @Value("${env-name:DEVELOPMENT}")
     private String envName;
 
-    private final AuthService authService;
+    private final IAuthService authService;
     private final JwtService jwtService;
-    private final LoginLogService loginLogService;
-    private final MediaService mediaService;
-    private final AdminService adminService;
-    private final CompanyEmployeeService employeeService;
-    private final CompanyAdminService companyAdminService;
+    private final ILoginLogService loginLogService;
+    private final IMediaService mediaService;
+    private final IAdminService adminService;
+    private final ICompanyEmployeeService employeeService;
+    private final ICompanyAdminService companyAdminService;
 
-    public AuthController(AuthService authService, JwtService jwtService, LoginLogService loginLogService,
-            MediaService mediaService, AdminService adminService,
-            CompanyEmployeeService employeeService, CompanyAdminService companyAdminService) {
+    public AuthController(
+            IAuthService authService,
+            JwtService jwtService,
+            ILoginLogService loginLogService,
+            IMediaService mediaService,
+            IAdminService adminService,
+            ICompanyEmployeeService employeeService,
+            ICompanyAdminService companyAdminService) {
         this.authService = authService;
         this.jwtService = jwtService;
         this.loginLogService = loginLogService;

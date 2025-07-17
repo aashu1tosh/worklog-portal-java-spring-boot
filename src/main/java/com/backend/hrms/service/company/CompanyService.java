@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backend.hrms.contracts.company.ICompanyService;
 import com.backend.hrms.dto.company.CompanyDTO;
 import com.backend.hrms.entity.company.CompanyEntity;
 import com.backend.hrms.exception.HttpException;
@@ -14,7 +15,7 @@ import com.backend.hrms.repository.company.CompanyRepository;
 
 @Service
 @Transactional
-public class CompanyService {
+public class CompanyService implements ICompanyService {
 
     private final CompanyRepository companyRepository;
 

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.backend.hrms.contracts.company.worklog.IWorklogService;
 import com.backend.hrms.dto.company.worklog.WorklogDTO;
 import com.backend.hrms.entity.company.worklog.WorklogEntity;
 import com.backend.hrms.exception.HttpException;
@@ -20,7 +21,7 @@ import lombok.AllArgsConstructor;
 @Service
 @Transactional
 @AllArgsConstructor
-public class WorklogService {
+public class WorklogService implements IWorklogService {
 
     private final WorklogRepository worklogRepository;
     private final CompanyEmployeeService companyEmployeeCompanyService;
@@ -28,8 +29,6 @@ public class WorklogService {
     public void create(WorklogDTO.RegisterDTO data, JwtPayload jwt) {
 
         var check = worklogRepository.checksIfCanCreateNewWorklog(UUIDUtils.validateId(jwt.employeeId()));
-        System.out.println("🚀 ~ WorklogService ~ void create ~ check: " + check);
-
         if (check)
             throw HttpException
                     .badRequest("You have already created a worklog for today. You cannot create a new one.");

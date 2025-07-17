@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.backend.hrms.contracts.admin.IAdminService;
 import com.backend.hrms.dto.auth.AdminDTO;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.entity.AdminEntity;
@@ -19,7 +20,7 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 @Transactional
-public class AdminService {
+public class AdminService implements IAdminService {
 
     private final AdminRepository adminRepository;
     private final AuthService authService;

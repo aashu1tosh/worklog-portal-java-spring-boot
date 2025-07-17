@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backend.hrms.contracts.media.IMediaService;
 import com.backend.hrms.dto.media.MediaDTO;
 import com.backend.hrms.entity.media.MediaEntity;
 import com.backend.hrms.exception.HttpException;
@@ -22,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class MediaService {
+public class MediaService implements IMediaService {
 
     private final MediaRepository mediaRepository;
 

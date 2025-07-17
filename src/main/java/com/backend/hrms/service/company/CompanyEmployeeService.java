@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.backend.hrms.contracts.company.ICompanyEmployeeService;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.company.CompanyEmployeeDTO;
 import com.backend.hrms.entity.company.CompanyEmployeeEntity;
@@ -19,7 +20,7 @@ import lombok.AllArgsConstructor;
 @Service
 @Transactional
 @AllArgsConstructor
-public class CompanyEmployeeService {
+public class CompanyEmployeeService implements ICompanyEmployeeService {
 
     private final CompanyEmployeeRepository companyEmployeeRepository;
     private final AuthService authService;

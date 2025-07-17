@@ -17,24 +17,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.hrms.contracts.company.ICompanyService;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.company.CompanyDTO;
 import com.backend.hrms.dto.paginatedResponse.PaginatedResponse;
 import com.backend.hrms.entity.company.CompanyEntity;
 import com.backend.hrms.helpers.Messages;
-import com.backend.hrms.service.company.CompanyService;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/company")
 @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN')")
+@AllArgsConstructor
 public class CompanyController {
-    private final CompanyService companyService;
-
-    public CompanyController(CompanyService companyService) {
-        this.companyService = companyService;
-    }
+    private final ICompanyService companyService;
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)

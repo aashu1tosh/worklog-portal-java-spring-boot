@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.hrms.constants.enums.Role;
+import com.backend.hrms.contracts.admin.IAdminService;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.auth.AdminDTO;
 import com.backend.hrms.dto.paginatedResponse.PaginatedResponse;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
-import com.backend.hrms.service.AdminService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/admin")
 @AllArgsConstructor
 public class AdminController {
-    private final AdminService adminService;
+    private final IAdminService adminService;
 
     @PostMapping()
     @PreAuthorize("hasAnyRole('SUDO_ADMIN')")

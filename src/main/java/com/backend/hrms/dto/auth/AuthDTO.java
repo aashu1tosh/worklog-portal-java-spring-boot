@@ -1,8 +1,11 @@
 package com.backend.hrms.dto.auth;
 
+import java.util.List;
+
 import com.backend.hrms.dto.baseEntityResponse.BaseResponse;
 import com.backend.hrms.dto.company.CompanyAdminDTO;
 import com.backend.hrms.dto.company.CompanyEmployeeDTO;
+import com.backend.hrms.dto.media.MediaDTO;
 import com.backend.hrms.entity.auth.AuthEntity;
 
 import jakarta.validation.constraints.Email;
@@ -54,6 +57,7 @@ public class AuthDTO {
         private AdminDTO.Response admin;
         private CompanyAdminDTO.Response companyAdmin;
         private CompanyEmployeeDTO.Response companyEmployee;
+        private List<MediaDTO.Return> media;
 
         public static MeDTO fromEntity(AuthEntity entity) {
             return MeDTO.builder()
@@ -70,6 +74,11 @@ public class AuthDTO {
                     .companyEmployee(entity.getCompanyEmployee() != null
                             ? CompanyEmployeeDTO.Response.fromShallowEntity(entity.getCompanyEmployee())
                             : null)
+                    .media(entity.getMedia() != null
+                            ? entity.getMedia().stream()
+                                    .map(MediaDTO.Return::fromEntity)
+                                    .toList()
+                            : List.of())
                     .build();
         }
 
@@ -107,5 +116,25 @@ public class AuthDTO {
                     .role(entity.getRole().name())
                     .build();
         }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ProfileUpdateDTO {
+        @NotBlank(message = "First name is required")
+        private String firstName;
+
+        private String middleName;
+
+        @NotBlank(message = "Last name is required")
+        private String lastName;
+
+        // this is correct as what media controller returns should be here
+        private List<MediaDTO.Response> media;
+
+        private List<String> deleteMedia;
     }
 }

@@ -6,8 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.backend.hrms.contracts.company.ICompanyEmployeeService;
+import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.company.CompanyEmployeeDTO;
 import com.backend.hrms.entity.company.CompanyEmployeeEntity;
+import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.repository.company.CompanyEmployeeRepository;
 import com.backend.hrms.service.auth.AuthService;
 
@@ -17,7 +20,7 @@ import lombok.AllArgsConstructor;
 @Service
 @Transactional
 @AllArgsConstructor
-public class CompanyEmployeeService {
+public class CompanyEmployeeService implements ICompanyEmployeeService {
 
     private final CompanyEmployeeRepository companyEmployeeRepository;
     private final AuthService authService;
@@ -47,5 +50,19 @@ public class CompanyEmployeeService {
     public CompanyEmployeeEntity getById(UUID id) {
         return companyEmployeeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Company employee not found with id: " + id));
+    }
+
+    public void update(AuthDTO.ProfileUpdateDTO data, UUID id) {
+        var auth = authService.checkById(id);
+
+        if (auth.getCompanyEmployee().getId() == null) {
+            throw HttpException.notFound("Employee not found for the given ID.");
+        }
+
+        var companyEmployeeEntity = auth.getCompanyEmployee();
+        companyEmployeeEntity.setFirstName(data.getFirstName());
+        companyEmployeeEntity.setLastName(data.getLastName());
+        companyEmployeeEntity.setMiddleName(data.getMiddleName());
+        companyEmployeeRepository.save(companyEmployeeEntity);
     }
 }

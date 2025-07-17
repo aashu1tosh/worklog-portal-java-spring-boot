@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.hrms.constants.enums.Role;
+import com.backend.hrms.contracts.company.ICompanyAdminService;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.company.CompanyAdminDTO;
 import com.backend.hrms.dto.paginatedResponse.PaginatedResponse;
@@ -23,7 +24,6 @@ import com.backend.hrms.entity.company.CompanyAdminEntity;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
 import com.backend.hrms.security.jwt.JwtPayload;
-import com.backend.hrms.service.company.CompanyAdminService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -33,7 +33,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/company/admin")
 public class CompanyAdminController {
 
-        private final CompanyAdminService companyAdminService;
+        private final ICompanyAdminService companyAdminService;
 
         @PostMapping()
         @PreAuthorize("hasAnyRole('SUDO_ADMIN', 'ADMIN', 'COMPANY_ADMIN', 'COMPANY_SUPER_ADMIN')")

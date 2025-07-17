@@ -1,10 +1,14 @@
 package com.backend.hrms.entity.auth;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.backend.hrms.constants.enums.Role;
 import com.backend.hrms.entity.AdminEntity;
 import com.backend.hrms.entity.base.BaseEntity;
 import com.backend.hrms.entity.company.CompanyAdminEntity;
 import com.backend.hrms.entity.company.CompanyEmployeeEntity;
+import com.backend.hrms.entity.media.MediaEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,6 +17,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -57,4 +62,7 @@ public class AuthEntity extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     @JoinColumn(name = "company_employee_id", nullable = true)
     private CompanyEmployeeEntity companyEmployee;
+
+    @OneToMany(mappedBy = "auth", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MediaEntity> media = new ArrayList<>();
 }

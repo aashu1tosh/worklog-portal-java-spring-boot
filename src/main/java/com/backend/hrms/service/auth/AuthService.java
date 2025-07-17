@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.backend.hrms.contracts.auth.IAuthService;
 import com.backend.hrms.dto.auth.AdminDTO;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.company.CompanyAdminDTO;
@@ -21,7 +22,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class AuthService {
+public class AuthService implements IAuthService {
 
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
@@ -50,6 +51,11 @@ public class AuthService {
     public AuthEntity me(UUID id) {
         return authRepository.findById(id)
                 .orElseThrow(() -> HttpException.notFound("Details not found for this user"));
+    }
+
+    public AuthEntity checkById(UUID id) {
+        return authRepository.checkById(id)
+                .orElseThrow(() -> HttpException.notFound("User not found"));
     }
 
     public void registerAdmin(AdminDTO.RegisterDTO data, AdminEntity adminEntity) {
@@ -103,7 +109,7 @@ public class AuthService {
 
         var authEntity = authRepository.findById(id)
                 .orElseThrow(() -> HttpException.notFound("User not found"));
-                
+
         if (!passwordEncoder.matches(data.getOldPassword(), authEntity.getPassword())) {
             throw HttpException.badRequest("Old password is incorrect");
         }

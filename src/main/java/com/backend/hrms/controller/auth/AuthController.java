@@ -18,6 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.WebUtils;
 
+import com.backend.hrms.contracts.admin.IAdminService;
+import com.backend.hrms.contracts.auth.IAuthService;
+import com.backend.hrms.contracts.auth.ILoginLogService;
+import com.backend.hrms.contracts.company.ICompanyAdminService;
+import com.backend.hrms.contracts.company.ICompanyEmployeeService;
+import com.backend.hrms.contracts.media.IMediaService;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.auth.LoginLogDTO;
@@ -30,8 +36,6 @@ import com.backend.hrms.helpers.auth.GetClientsIp;
 import com.backend.hrms.helpers.utils.UUIDUtils;
 import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.security.jwt.JwtService;
-import com.backend.hrms.service.auth.AuthService;
-import com.backend.hrms.service.auth.LoginLogService;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
@@ -46,14 +50,29 @@ public class AuthController {
     @Value("${env-name:DEVELOPMENT}")
     private String envName;
 
-    private final AuthService authService;
+    private final IAuthService authService;
     private final JwtService jwtService;
-    private final LoginLogService loginLogService;
+    private final ILoginLogService loginLogService;
+    private final IMediaService mediaService;
+    private final IAdminService adminService;
+    private final ICompanyEmployeeService employeeService;
+    private final ICompanyAdminService companyAdminService;
 
-    public AuthController(AuthService authService, JwtService jwtService, LoginLogService loginLogService) {
+    public AuthController(
+            IAuthService authService,
+            JwtService jwtService,
+            ILoginLogService loginLogService,
+            IMediaService mediaService,
+            IAdminService adminService,
+            ICompanyEmployeeService employeeService,
+            ICompanyAdminService companyAdminService) {
         this.authService = authService;
         this.jwtService = jwtService;
         this.loginLogService = loginLogService;
+        this.mediaService = mediaService;
+        this.adminService = adminService;
+        this.employeeService = employeeService;
+        this.companyAdminService = companyAdminService;
     }
 
     @PostMapping("/public/login")
@@ -292,6 +311,43 @@ public class AuthController {
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
         return new ApiResponse<>(true, "Password updated successfully", "");
+    }
+
+    @PatchMapping("/update-profile")
+    public ApiResponse<String> updateProfile(@Valid @RequestBody AuthDTO.ProfileUpdateDTO body,
+            @AuthenticationPrincipal JwtPayload jwt) {
+        if (body.getMedia() != null && !body.getMedia().isEmpty()) {
+            var authEntity = authService.checkById(UUIDUtils.validateId(jwt.id()));
+            mediaService.uploadMultipleFiles(body.getMedia(), authEntity, "auth");
+        }
+
+        if (body.getDeleteMedia() != null && !body.getDeleteMedia().isEmpty()) {
+            mediaService.deleteMultipleFile(body.getDeleteMedia());
+        }
+
+        String role = jwt.role();
+
+        switch (role) {
+            case "SUDO_ADMIN":
+                adminService.update(body, UUIDUtils.validateId(jwt.id()));
+                break;
+            case "ADMIN":
+                adminService.update(body, UUIDUtils.validateId(jwt.id()));
+                break;
+            case "COMPANY_ADMIN":
+                companyAdminService.update(body, UUIDUtils.validateId(jwt.id()));
+                break;
+            case "COMPANY_SUPER_ADMIN":
+                companyAdminService.update(body, UUIDUtils.validateId(jwt.id()));
+                break;
+            case "COMPANY_EMPLOYEE":
+                employeeService.update(body, UUIDUtils.validateId(jwt.id()));
+                break;
+            default:
+                break;
+        }
+
+        return new ApiResponse<>(true, "Profile updated successfully", "");
     }
 
     private String resolveRefreshToken(HttpServletRequest req) {

@@ -12,23 +12,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.hrms.contracts.auth.ILoginLogService;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.auth.LoginLogDTO;
 import com.backend.hrms.dto.paginatedResponse.PaginatedResponse;
 import com.backend.hrms.entity.auth.LoginLogEntity;
 import com.backend.hrms.helpers.Messages;
 import com.backend.hrms.security.jwt.JwtPayload;
-import com.backend.hrms.service.auth.LoginLogService;
+
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/login-log")
+@AllArgsConstructor
 public class LoginLogController {
 
-    private final LoginLogService loginLogService;
-
-    public LoginLogController(LoginLogService loginLogService) {
-        this.loginLogService = loginLogService;
-    }
+    private final ILoginLogService loginLogService;
 
     @GetMapping()
     public ApiResponse<PaginatedResponse<LoginLogDTO.Response>> get(

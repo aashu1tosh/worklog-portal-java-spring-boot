@@ -34,4 +34,9 @@ public class PropertyUtil {
         String raw = props.getProperty("app.expose-errors", "false");
         return Boolean.parseBoolean(raw.trim());
     }
+
+    public static String getApiKey() {
+        return props.getProperty("app.api-key", "Key@123");
+
+    }
 }

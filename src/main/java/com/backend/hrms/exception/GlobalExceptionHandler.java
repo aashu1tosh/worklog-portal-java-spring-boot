@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +18,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.backend.hrms.dto.apiResponse.ApiResponse;
+import com.backend.hrms.helpers.utils.PropertyUtil;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -26,8 +26,7 @@ import jakarta.validation.ConstraintViolationException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @Value("${app.expose-errors:false}")
-    private boolean exposeErrors;
+    private final boolean exposeErrors = PropertyUtil.getExposeErrors();
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationErrors(MethodArgumentNotValidException ex) {
@@ -60,8 +59,6 @@ public class GlobalExceptionHandler {
                 "You are not authorized for this process.", null);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
-
-    // ✅ Common exception handlers below
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {

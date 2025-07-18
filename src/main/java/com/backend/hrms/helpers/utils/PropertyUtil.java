@@ -29,4 +29,9 @@ public class PropertyUtil {
                 .toList();
     }
 
+    public static boolean getExposeErrors() {
+        // default false if missing
+        String raw = props.getProperty("app.expose-errors", "false");
+        return Boolean.parseBoolean(raw.trim());
+    }
 }

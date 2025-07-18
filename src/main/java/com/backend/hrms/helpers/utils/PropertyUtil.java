@@ -25,7 +25,7 @@ public class PropertyUtil {
     public static List<String> getAllowedOrigins() {
         String origins = props.getProperty("app.allowed-origins", "http://localhost:5173");
         return Arrays.stream(origins.split(","))
-                .map(String::trim) // remove any extra spaces
+                .map(String::trim) // removes any extra spaces
                 .toList();
     }
 

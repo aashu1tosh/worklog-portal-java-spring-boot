@@ -44,7 +44,7 @@ public class UserAgentFilter extends OncePerRequestFilter {
                 String xApiKey = request.getHeader("x-api-key");
 
                 if (xApiKey == null || !xApiKey.equals(apiKey)) {
-                    throw HttpException.forbidden("Forbidden: User browser");
+                    throw HttpException.forbidden("Forbidden");
                 }
             }
         }

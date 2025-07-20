@@ -39,7 +39,7 @@ public class PropertyUtil {
         return props.getProperty("app.api-key", "Key@123");
     }
 
-    public static String getForgotPasswordQuery() {
-        return props.getProperty("app.api-key", "Key@123");
+    public static String getForgotPasswordQueue() {
+        return props.getProperty("rabbitmq.forgot-password.queue", "forgot-password.queue");
     }
 }

@@ -58,6 +58,11 @@ public class AuthService implements IAuthService {
                 .orElseThrow(() -> HttpException.notFound("User not found"));
     }
 
+    public AuthEntity findByEmail(String email) {
+        return authRepository.findByEmail(email.toLowerCase())
+                .orElseThrow(() -> HttpException.notFound("User not found"));
+    }
+
     public void registerAdmin(AdminDTO.RegisterDTO data, AdminEntity adminEntity) {
 
         if (authRepository.existsByEmail(data.getEmail().toLowerCase()))

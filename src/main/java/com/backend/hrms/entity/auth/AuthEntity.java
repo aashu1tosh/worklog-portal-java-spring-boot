@@ -65,4 +65,7 @@ public class AuthEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "auth", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MediaEntity> media = new ArrayList<>();
+
+    @OneToMany(mappedBy = "auth", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ResetPasswordEntity> resetPasswords = new ArrayList<>();
 }

@@ -13,6 +13,7 @@ import com.backend.hrms.entity.auth.AuthEntity;
 @Repository
 public interface AuthRepository extends JpaRepository<AuthEntity, UUID> {
 
+    @Query("SELECT a FROM AuthEntity a WHERE a.email = :email")
     Optional<AuthEntity> findByEmail(String email);
 
     Optional<AuthEntity> findByPhone(String phone);

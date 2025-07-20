@@ -19,6 +19,8 @@ public interface IAuthService {
 
     AuthEntity checkById(UUID id);
 
+    AuthEntity findByEmail(String id);
+
     void registerAdmin(AdminDTO.RegisterDTO data, AdminEntity adminEntity);
 
     void registerCompanyAdmin(CompanyAdminDTO.RegisterDTO data, CompanyAdminEntity companyAdminEntity);

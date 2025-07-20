@@ -137,4 +137,15 @@ public class AuthDTO {
 
         private List<String> deleteMedia;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ForgotPasswordDTO {
+        @NotBlank(message = "Email is required")
+        @Email(message = "Must be a valid e‑mail address")
+        private String email;
+    }
 }

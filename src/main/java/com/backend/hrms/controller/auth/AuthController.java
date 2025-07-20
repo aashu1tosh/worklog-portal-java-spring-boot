@@ -21,6 +21,7 @@ import org.springframework.web.util.WebUtils;
 import com.backend.hrms.contracts.admin.IAdminService;
 import com.backend.hrms.contracts.auth.IAuthService;
 import com.backend.hrms.contracts.auth.ILoginLogService;
+import com.backend.hrms.contracts.auth.IResetPasswordService;
 import com.backend.hrms.contracts.company.ICompanyAdminService;
 import com.backend.hrms.contracts.company.ICompanyEmployeeService;
 import com.backend.hrms.contracts.media.IMediaService;
@@ -57,6 +58,7 @@ public class AuthController {
     private final IAdminService adminService;
     private final ICompanyEmployeeService employeeService;
     private final ICompanyAdminService companyAdminService;
+    private final IResetPasswordService resetPasswordService;
 
     public AuthController(
             IAuthService authService,
@@ -65,7 +67,8 @@ public class AuthController {
             IMediaService mediaService,
             IAdminService adminService,
             ICompanyEmployeeService employeeService,
-            ICompanyAdminService companyAdminService) {
+            ICompanyAdminService companyAdminService,
+            IResetPasswordService resetPasswordService) {
         this.authService = authService;
         this.jwtService = jwtService;
         this.loginLogService = loginLogService;
@@ -73,6 +76,7 @@ public class AuthController {
         this.adminService = adminService;
         this.employeeService = employeeService;
         this.companyAdminService = companyAdminService;
+        this.resetPasswordService = resetPasswordService;
     }
 
     @PostMapping("/public/login")
@@ -348,6 +352,20 @@ public class AuthController {
         }
 
         return new ApiResponse<>(true, "Profile updated successfully", "");
+    }
+
+    @PostMapping("/public/forgot-password")
+    public ApiResponse<String> forgotPassword(@RequestBody AuthDTO.ForgotPasswordDTO request) {
+        AuthEntity data;
+        try {
+            data = authService.findByEmail(request.getEmail());
+        } catch (HttpException e) {
+            // If email does not exist, we still return success to avoid information leakage
+            return new ApiResponse<>(true, "Password reset email sent if the email exists.", "");
+        }
+        var response = resetPasswordService.create(data);
+        return new ApiResponse<>(true, "Password reset email sent if the email exists.", "");
+
     }
 
     private String resolveRefreshToken(HttpServletRequest req) {

@@ -1,5 +1,6 @@
 package com.backend.hrms.dto.auth;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.backend.hrms.dto.baseEntityResponse.BaseResponse;
@@ -143,9 +144,18 @@ public class AuthDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class ForgotPasswordDTO {
+    public static class ForgotPasswordDTO implements Serializable {
         @NotBlank(message = "Email is required")
         @Email(message = "Must be a valid e‑mail address")
         private String email;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ForgotPasswordEmailDTO {
+        private String to;
+        private String resetToken;
     }
 }

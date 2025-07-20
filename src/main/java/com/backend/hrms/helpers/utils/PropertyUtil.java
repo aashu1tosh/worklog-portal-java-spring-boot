@@ -37,6 +37,9 @@ public class PropertyUtil {
 
     public static String getApiKey() {
         return props.getProperty("app.api-key", "Key@123");
+    }
 
+    public static String getForgotPasswordQuery() {
+        return props.getProperty("app.api-key", "Key@123");
     }
 }

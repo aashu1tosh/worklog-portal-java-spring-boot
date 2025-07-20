@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -48,8 +50,14 @@ import jakarta.validation.Valid;
 @RequestMapping("/auth")
 public class AuthController {
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
     @Value("${env-name:DEVELOPMENT}")
     private String envName;
+
+    @Value("${rabbitmq.forgot-password.queue}")
+    private String forgotPasswordQueue;
 
     private final IAuthService authService;
     private final JwtService jwtService;
@@ -364,6 +372,14 @@ public class AuthController {
             return new ApiResponse<>(true, "Password reset email sent if the email exists.", "");
         }
         var response = resetPasswordService.create(data);
+
+        var message = new AuthDTO.ForgotPasswordEmailDTO();
+        message.setTo(data.getEmail());
+        message.setResetToken(response.getId().toString());
+
+        // Send message to RabbitMQ queue
+        rabbitTemplate.convertAndSend(forgotPasswordQueue, message);
+
         return new ApiResponse<>(true, "Password reset email sent if the email exists.", "");
 
     }

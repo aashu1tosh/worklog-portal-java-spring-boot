@@ -36,6 +36,7 @@ import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
 import com.backend.hrms.helpers.auth.DeviceDetector;
 import com.backend.hrms.helpers.auth.GetClientsIp;
+import com.backend.hrms.helpers.utils.PropertyUtil;
 import com.backend.hrms.helpers.utils.UUIDUtils;
 import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.security.jwt.JwtService;
@@ -56,8 +57,7 @@ public class AuthController {
     @Value("${env-name:DEVELOPMENT}")
     private String envName;
 
-    @Value("${rabbitmq.forgot-password.queue}")
-    private String forgotPasswordQueue;
+    private String forgotPasswordQueue = PropertyUtil.getForgotPasswordQueue();
 
     private final IAuthService authService;
     private final JwtService jwtService;

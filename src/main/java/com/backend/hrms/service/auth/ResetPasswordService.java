@@ -20,7 +20,7 @@ public class ResetPasswordService implements IResetPasswordService {
     private final ResetPasswordRepository resetPasswordRepository;
 
     public ResetPasswordEntity create(AuthEntity data) {
-        var check = resetPasswordRepository.existsByAuthIdAndExpiryDate(data.getId());
+        resetPasswordRepository.existsByAuthIdAndExpiryDate(data.getId());
         // if (check)
         // throw HttpException.badRequest(
         // "A reset password request already exists for this user and has not expired

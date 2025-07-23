@@ -29,6 +29,15 @@ public class RabbitMQConfig {
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter jsonMessageConverter) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
         template.setMessageConverter(jsonMessageConverter);
+
+        // Enable publisher confirms (ACK/NACK)
+        template.setConfirmCallback((correlationData, ack, cause) -> {
+            if (ack) {
+                System.out.println("✅ Message published successfully to exchange.");
+            } else {
+                System.err.println("❌ Failed to publish message: " + cause);
+            }
+        });
         return template;
     }
 }

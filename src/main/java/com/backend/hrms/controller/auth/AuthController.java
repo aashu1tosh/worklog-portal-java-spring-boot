@@ -379,7 +379,6 @@ public class AuthController {
 
         // Send message to RabbitMQ queue
         rabbitTemplate.convertAndSend(forgotPasswordQueue, message);
-
         return new ApiResponse<>(true, "Password reset email sent if the email exists.", "");
 
     }

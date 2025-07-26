@@ -29,6 +29,12 @@ public class ResetPasswordEntity extends BaseEntity {
     @Column(nullable = false)
     private boolean used = false;
 
+    @Column(nullable = false)
+    private boolean sent = false;
+
+    @Column(nullable = false, name = "sent_at")
+    private Instant sentAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_id", nullable = false)
     private AuthEntity auth;

@@ -41,4 +41,13 @@ public class ResetPasswordService implements IResetPasswordService {
                 .orElseThrow(() -> HttpException.badRequest("Reset password request not found"));
     }
 
+    public void mailSend(UUID id) {
+        var check = resetPasswordRepository.findById(id)
+                .orElseThrow(() -> HttpException.badRequest("Reset password request not found"));
+
+        check.setSent(true);
+        check.setSentAt(Instant.now());
+        resetPasswordRepository.save(check);
+    }
+
 }

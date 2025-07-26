@@ -9,4 +9,6 @@ public interface IResetPasswordService {
     ResetPasswordEntity create(AuthEntity data);
 
     ResetPasswordEntity findById(UUID id);
+
+    void mailSend(UUID id);
 }

@@ -1,12 +1,14 @@
 package com.backend.hrms.service.auth;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import com.backend.hrms.contracts.auth.IResetPasswordService;
 import com.backend.hrms.entity.auth.AuthEntity;
 import com.backend.hrms.entity.auth.ResetPasswordEntity;
+import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.repository.auth.ResetPasswordRepository;
 
 import jakarta.transaction.Transactional;
@@ -32,6 +34,11 @@ public class ResetPasswordService implements IResetPasswordService {
                 Instant.now().plusSeconds(3600)); // expiry time to 1 hour from now
 
         return resetPasswordRepository.save(resetPasswordEntity);
+    }
+
+    public ResetPasswordEntity findById(UUID id) {
+        return resetPasswordRepository.findById(id)
+                .orElseThrow(() -> HttpException.badRequest("Reset password request not found"));
     }
 
 }

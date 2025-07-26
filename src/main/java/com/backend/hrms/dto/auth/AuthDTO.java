@@ -11,6 +11,7 @@ import com.backend.hrms.entity.auth.AuthEntity;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +20,9 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 public class AuthDTO {
+
+    public static final String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+
     @Getter
     @Setter
     @NoArgsConstructor
@@ -157,5 +161,16 @@ public class AuthDTO {
     public static class ForgotPasswordEmailDTO {
         private String to;
         private String resetToken;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RestorePasswordDTO {
+
+        @NotBlank(message = "New password is required")
+        @Pattern(regexp = passwordPattern, message = "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character")
+        private String newPassword;
     }
 }

@@ -28,4 +28,7 @@ public interface IAuthService {
     void registerCompanyEmployee(CompanyEmployeeDTO.RegisterDTO data, CompanyEmployeeEntity companyEmployeeEntity);
 
     void updatePassword(AuthDTO.UpdatePasswordDTO data, UUID id);
+
+    void restorePassword(AuthDTO.RestorePasswordDTO data, AuthEntity authEntity);
+
 }

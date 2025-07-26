@@ -122,4 +122,12 @@ public class AuthService implements IAuthService {
         authEntity.setPassword(passwordEncoder.encode(data.getNewPassword()));
         authRepository.save(authEntity);
     }
+
+    public void restorePassword(AuthDTO.RestorePasswordDTO data, AuthEntity authEntity) {
+        var check = authRepository.findById(authEntity.getId())
+                .orElseThrow(() -> HttpException.notFound("User not found"));
+
+        check.setPassword(passwordEncoder.encode(data.getNewPassword()));
+        authRepository.save(authEntity);
+    }
 }

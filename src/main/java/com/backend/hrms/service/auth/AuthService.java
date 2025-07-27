@@ -58,6 +58,11 @@ public class AuthService implements IAuthService {
                 .orElseThrow(() -> HttpException.notFound("User not found"));
     }
 
+    public AuthEntity findByEmail(String email) {
+        return authRepository.findByEmail(email.toLowerCase())
+                .orElseThrow(() -> HttpException.notFound("User not found"));
+    }
+
     public void registerAdmin(AdminDTO.RegisterDTO data, AdminEntity adminEntity) {
 
         if (authRepository.existsByEmail(data.getEmail().toLowerCase()))
@@ -115,6 +120,14 @@ public class AuthService implements IAuthService {
         }
 
         authEntity.setPassword(passwordEncoder.encode(data.getNewPassword()));
+        authRepository.save(authEntity);
+    }
+
+    public void restorePassword(AuthDTO.RestorePasswordDTO data, AuthEntity authEntity) {
+        var check = authRepository.findById(authEntity.getId())
+                .orElseThrow(() -> HttpException.notFound("User not found"));
+
+        check.setPassword(passwordEncoder.encode(data.getNewPassword()));
         authRepository.save(authEntity);
     }
 }

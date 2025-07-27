@@ -6,12 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ import org.springframework.web.util.WebUtils;
 import com.backend.hrms.contracts.admin.IAdminService;
 import com.backend.hrms.contracts.auth.IAuthService;
 import com.backend.hrms.contracts.auth.ILoginLogService;
+import com.backend.hrms.contracts.auth.IResetPasswordService;
 import com.backend.hrms.contracts.company.ICompanyAdminService;
 import com.backend.hrms.contracts.company.ICompanyEmployeeService;
 import com.backend.hrms.contracts.media.IMediaService;
@@ -33,6 +36,7 @@ import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
 import com.backend.hrms.helpers.auth.DeviceDetector;
 import com.backend.hrms.helpers.auth.GetClientsIp;
+import com.backend.hrms.helpers.utils.PropertyUtil;
 import com.backend.hrms.helpers.utils.UUIDUtils;
 import com.backend.hrms.security.jwt.JwtPayload;
 import com.backend.hrms.security.jwt.JwtService;
@@ -50,6 +54,8 @@ public class AuthController {
     @Value("${env-name:DEVELOPMENT}")
     private String envName;
 
+    private String forgotPasswordQueue = PropertyUtil.getForgotPasswordQueue();
+
     private final IAuthService authService;
     private final JwtService jwtService;
     private final ILoginLogService loginLogService;
@@ -57,6 +63,8 @@ public class AuthController {
     private final IAdminService adminService;
     private final ICompanyEmployeeService employeeService;
     private final ICompanyAdminService companyAdminService;
+    private final IResetPasswordService resetPasswordService;
+    private final RabbitTemplate rabbitTemplate;
 
     public AuthController(
             IAuthService authService,
@@ -65,7 +73,9 @@ public class AuthController {
             IMediaService mediaService,
             IAdminService adminService,
             ICompanyEmployeeService employeeService,
-            ICompanyAdminService companyAdminService) {
+            ICompanyAdminService companyAdminService,
+            IResetPasswordService resetPasswordService,
+            RabbitTemplate rabbitTemplate) {
         this.authService = authService;
         this.jwtService = jwtService;
         this.loginLogService = loginLogService;
@@ -73,6 +83,8 @@ public class AuthController {
         this.adminService = adminService;
         this.employeeService = employeeService;
         this.companyAdminService = companyAdminService;
+        this.resetPasswordService = resetPasswordService;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @PostMapping("/public/login")
@@ -348,6 +360,39 @@ public class AuthController {
         }
 
         return new ApiResponse<>(true, "Profile updated successfully", "");
+    }
+
+    @PostMapping("/public/forgot-password")
+    public ApiResponse<String> forgotPassword(@Valid @RequestBody AuthDTO.ForgotPasswordDTO request) {
+        AuthEntity data;
+        try {
+            data = authService.findByEmail(request.getEmail());
+        } catch (HttpException e) {
+            // If email does not exist, we still return success to avoid information leakage
+            return new ApiResponse<>(true, "Password reset email sent if the email exists.", "");
+        }
+        var response = resetPasswordService.create(data);
+
+        var message = new AuthDTO.ForgotPasswordEmailDTO();
+        message.setTo(data.getEmail());
+        message.setResetToken(response.getId().toString());
+
+        System.out.println("Forgot password email: " + message.getTo() + " token: " + message.getResetToken());
+        // Send message to RabbitMQ queue
+        rabbitTemplate.convertAndSend(forgotPasswordQueue, message);
+        return new ApiResponse<>(true, "Password reset email sent if the email exists.", "");
+
+    }
+
+    @PostMapping("/public/restore-password/{token}")
+    public ApiResponse<String> restorePassword(@Valid @RequestBody AuthDTO.RestorePasswordDTO request,
+            @PathVariable UUID token) {
+        var data = resetPasswordService.findById(token);
+        var authEntity = data.getAuth();
+
+        authService.restorePassword(request, authEntity);
+        return new ApiResponse<>(true, "Password update successful", "");
+
     }
 
     private String resolveRefreshToken(HttpServletRequest req) {

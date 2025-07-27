@@ -19,6 +19,8 @@ public interface IAuthService {
 
     AuthEntity checkById(UUID id);
 
+    AuthEntity findByEmail(String id);
+
     void registerAdmin(AdminDTO.RegisterDTO data, AdminEntity adminEntity);
 
     void registerCompanyAdmin(CompanyAdminDTO.RegisterDTO data, CompanyAdminEntity companyAdminEntity);
@@ -26,4 +28,7 @@ public interface IAuthService {
     void registerCompanyEmployee(CompanyEmployeeDTO.RegisterDTO data, CompanyEmployeeEntity companyEmployeeEntity);
 
     void updatePassword(AuthDTO.UpdatePasswordDTO data, UUID id);
+
+    void restorePassword(AuthDTO.RestorePasswordDTO data, AuthEntity authEntity);
+
 }

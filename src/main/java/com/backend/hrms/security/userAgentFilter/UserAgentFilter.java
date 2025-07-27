@@ -4,25 +4,23 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.backend.hrms.exception.HttpException;
+import com.backend.hrms.helpers.utils.PropertyUtil;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.lang.NonNull;
-
 
 @Component
 public class UserAgentFilter extends OncePerRequestFilter {
 
-    @Value("${application.api-key}")
-    private String apiKey;
+    private final String apiKey = PropertyUtil.getApiKey();
 
     private static final List<HttpMethod> RESTRICTED_METHODS = Arrays.asList(
             HttpMethod.POST,
@@ -46,7 +44,7 @@ public class UserAgentFilter extends OncePerRequestFilter {
                 String xApiKey = request.getHeader("x-api-key");
 
                 if (xApiKey == null || !xApiKey.equals(apiKey)) {
-                    throw HttpException.forbidden("Forbidden: User browser");
+                    throw HttpException.forbidden("Forbidden");
                 }
             }
         }

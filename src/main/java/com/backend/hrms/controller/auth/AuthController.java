@@ -364,7 +364,7 @@ public class AuthController {
     }
 
     @PostMapping("/public/forgot-password")
-    public ApiResponse<String> forgotPassword(@RequestBody AuthDTO.ForgotPasswordDTO request) {
+    public ApiResponse<String> forgotPassword(@Valid @RequestBody AuthDTO.ForgotPasswordDTO request) {
         AuthEntity data;
         try {
             data = authService.findByEmail(request.getEmail());
@@ -386,7 +386,7 @@ public class AuthController {
     }
 
     @PostMapping("/public/restore-password/{token}")
-    public ApiResponse<String> restorePassword(@RequestBody AuthDTO.RestorePasswordDTO request,
+    public ApiResponse<String> restorePassword(@Valid @RequestBody AuthDTO.RestorePasswordDTO request,
             @PathVariable UUID token) {
         var data = resetPasswordService.findById(token);
         var authEntity = data.getAuth();

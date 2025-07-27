@@ -29,6 +29,10 @@ public class ResetPasswordEntity extends BaseEntity {
     @Column(nullable = false)
     private boolean used = false;
 
+    @Column(nullable = true, name = "used_at")
+    private Instant usedAt;
+
+    // this is mail sent status
     @Column(nullable = false)
     private boolean sent = false;
 

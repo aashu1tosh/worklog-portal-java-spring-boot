@@ -37,8 +37,21 @@ public class ResetPasswordService implements IResetPasswordService {
     }
 
     public ResetPasswordEntity findById(UUID id) {
-        return resetPasswordRepository.findById(id)
+        var check = resetPasswordRepository.findById(id)
                 .orElseThrow(() -> HttpException.badRequest("Reset password request not found"));
+
+        if (check.getExpiresAt().isBefore(Instant.now())) {
+            throw HttpException.badRequest("Reset password request has expired");
+        }
+
+        if (check.isUsed()) {
+            throw HttpException.badRequest("Reset password request has already been used");
+        }
+
+        check.setUsed(true);
+        check.setUsedAt(Instant.now());
+        resetPasswordRepository.save(check);
+        return check;
     }
 
     public void mailSend(UUID id) {

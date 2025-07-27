@@ -378,13 +378,14 @@ public class AuthController {
         message.setTo(data.getEmail());
         message.setResetToken(response.getId().toString());
 
+        System.out.println("Forgot password email: " + message.getTo() + " token: " + message.getResetToken());
         // Send message to RabbitMQ queue
         rabbitTemplate.convertAndSend(forgotPasswordQueue, message);
         return new ApiResponse<>(true, "Password reset email sent if the email exists.", "");
 
     }
 
-    @PostMapping("/public/restore-password")
+    @PostMapping("/public/restore-password/{token}")
     public ApiResponse<String> restorePassword(@RequestBody AuthDTO.RestorePasswordDTO request,
             @PathVariable UUID token) {
         var data = resetPasswordService.findById(token);

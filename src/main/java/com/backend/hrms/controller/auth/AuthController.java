@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -52,9 +51,6 @@ import jakarta.validation.Valid;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-
     @Value("${env-name:DEVELOPMENT}")
     private String envName;
 
@@ -68,6 +64,7 @@ public class AuthController {
     private final ICompanyEmployeeService employeeService;
     private final ICompanyAdminService companyAdminService;
     private final IResetPasswordService resetPasswordService;
+    private final RabbitTemplate rabbitTemplate;
 
     public AuthController(
             IAuthService authService,
@@ -77,7 +74,8 @@ public class AuthController {
             IAdminService adminService,
             ICompanyEmployeeService employeeService,
             ICompanyAdminService companyAdminService,
-            IResetPasswordService resetPasswordService) {
+            IResetPasswordService resetPasswordService,
+            RabbitTemplate rabbitTemplate) {
         this.authService = authService;
         this.jwtService = jwtService;
         this.loginLogService = loginLogService;
@@ -86,6 +84,7 @@ public class AuthController {
         this.employeeService = employeeService;
         this.companyAdminService = companyAdminService;
         this.resetPasswordService = resetPasswordService;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @PostMapping("/public/login")

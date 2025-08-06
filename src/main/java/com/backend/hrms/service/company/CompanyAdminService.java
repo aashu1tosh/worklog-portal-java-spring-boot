@@ -6,13 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.backend.hrms.contracts.auth.IAuthService;
 import com.backend.hrms.contracts.company.ICompanyAdminService;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.dto.company.CompanyAdminDTO;
 import com.backend.hrms.entity.company.CompanyAdminEntity;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.repository.company.CompanyAdminRepository;
-import com.backend.hrms.service.auth.AuthService;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -20,10 +20,10 @@ import lombok.AllArgsConstructor;
 @Service
 @Transactional
 @AllArgsConstructor
-public class CompanyAdminService implements ICompanyAdminService {
+class CompanyAdminService implements ICompanyAdminService {
 
     private final CompanyAdminRepository companyAdminRepository;
-    private final AuthService authService;
+    private final IAuthService authService;
     private final CompanyService companyService;
 
     public void register(CompanyAdminDTO.RegisterDTO data) {

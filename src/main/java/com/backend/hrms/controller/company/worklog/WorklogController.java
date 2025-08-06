@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.hrms.contracts.company.worklog.IWorklogService;
 import com.backend.hrms.dto.apiResponse.ApiResponse;
 import com.backend.hrms.dto.company.worklog.WorklogDTO;
 import com.backend.hrms.dto.paginatedResponse.PaginatedResponse;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.Messages;
 import com.backend.hrms.security.jwt.JwtPayload;
-import com.backend.hrms.service.company.worklog.WorklogService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -29,7 +29,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class WorklogController {
 
-        private final WorklogService worklogService;
+        private final IWorklogService worklogService;
 
         @PostMapping()
         @PreAuthorize("hasAnyRole('COMPANY_EMPLOYEE')")

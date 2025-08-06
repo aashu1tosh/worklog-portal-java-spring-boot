@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class MediaService implements IMediaService {
+class MediaService implements IMediaService {
 
     private final MediaRepository mediaRepository;
 

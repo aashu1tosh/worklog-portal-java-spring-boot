@@ -22,7 +22,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class AuthService implements IAuthService {
+class AuthService implements IAuthService {
 
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;

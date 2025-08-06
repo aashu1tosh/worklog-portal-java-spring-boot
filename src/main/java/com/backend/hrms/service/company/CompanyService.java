@@ -15,7 +15,7 @@ import com.backend.hrms.repository.company.CompanyRepository;
 
 @Service
 @Transactional
-public class CompanyService implements ICompanyService {
+class CompanyService implements ICompanyService {
 
     private final CompanyRepository companyRepository;
 

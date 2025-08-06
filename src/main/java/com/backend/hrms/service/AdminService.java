@@ -7,12 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.backend.hrms.contracts.admin.IAdminService;
+import com.backend.hrms.contracts.auth.IAuthService;
 import com.backend.hrms.dto.auth.AdminDTO;
 import com.backend.hrms.dto.auth.AuthDTO;
 import com.backend.hrms.entity.AdminEntity;
 import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.repository.AdminRepository;
-import com.backend.hrms.service.auth.AuthService;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -23,7 +23,7 @@ import lombok.AllArgsConstructor;
 public class AdminService implements IAdminService {
 
     private final AdminRepository adminRepository;
-    private final AuthService authService;
+    private final IAuthService authService;
 
     public void register(AdminDTO.RegisterDTO data) {
 

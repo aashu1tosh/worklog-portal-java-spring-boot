@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.backend.hrms.contracts.company.ICompanyEmployeeService;
 import com.backend.hrms.contracts.company.worklog.IWorklogService;
 import com.backend.hrms.dto.company.worklog.WorklogDTO;
 import com.backend.hrms.entity.company.worklog.WorklogEntity;
@@ -13,7 +14,6 @@ import com.backend.hrms.exception.HttpException;
 import com.backend.hrms.helpers.utils.UUIDUtils;
 import com.backend.hrms.repository.company.worklog.WorklogRepository;
 import com.backend.hrms.security.jwt.JwtPayload;
-import com.backend.hrms.service.company.CompanyEmployeeService;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -21,10 +21,10 @@ import lombok.AllArgsConstructor;
 @Service
 @Transactional
 @AllArgsConstructor
-public class WorklogService implements IWorklogService {
+class WorklogService implements IWorklogService {
 
     private final WorklogRepository worklogRepository;
-    private final CompanyEmployeeService companyEmployeeCompanyService;
+    private final ICompanyEmployeeService companyEmployeeCompanyService;
 
     public void create(WorklogDTO.RegisterDTO data, JwtPayload jwt) {
 

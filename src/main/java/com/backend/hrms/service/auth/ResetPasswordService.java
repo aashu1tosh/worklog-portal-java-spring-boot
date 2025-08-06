@@ -17,7 +17,7 @@ import lombok.AllArgsConstructor;
 @Service
 @Transactional
 @AllArgsConstructor
-public class ResetPasswordService implements IResetPasswordService {
+class ResetPasswordService implements IResetPasswordService {
 
     private final ResetPasswordRepository resetPasswordRepository;
 

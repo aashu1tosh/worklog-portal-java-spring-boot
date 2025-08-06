@@ -17,7 +17,7 @@ import com.backend.hrms.repository.auth.AuthRepository;
 import com.backend.hrms.repository.auth.LoginLogRepository;
 
 @Service
-public class LoginLogService implements ILoginLogService {
+class LoginLogService implements ILoginLogService {
 
     private final LoginLogRepository loginLogRepository;
     private final AuthRepository authRepository;

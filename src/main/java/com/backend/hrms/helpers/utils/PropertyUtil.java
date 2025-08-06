@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PropertyUtil {
     private static final Properties props = new Properties();
@@ -41,5 +43,16 @@ public class PropertyUtil {
 
     public static String getForgotPasswordQueue() {
         return props.getProperty("rabbitmq.forgot-password.queue", "forgot-password.queue");
+    }
+
+    public static String getForgotPasswordWebhookUrl() {
+        return getBaseUrl() + "/webhook/forgot-password";
+    }
+
+    public static Set<String> getAllowedIps() {
+        String ips = props.getProperty("app.allowed-ips", "127.0.0.1,::1,localhost");
+        return Arrays.stream(ips.split(","))
+                .map(String::trim) // removes any extra spaces
+                .collect(Collectors.toSet());
     }
 }

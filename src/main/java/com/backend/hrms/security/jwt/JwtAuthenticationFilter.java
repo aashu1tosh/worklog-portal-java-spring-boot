@@ -104,7 +104,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         System.out.println("~ JwtAuthenticationFilter ~ Request Path: " + path + ", Method: " + method);
 
-        return path.contains("/public") || path.contains("/error") || "OPTIONS".equalsIgnoreCase(method);
+        // Skip JWT authentication for public endpoints, error endpoints, webhook
+        // endpoints, and OPTIONS requests
+        return path.contains("/public") ||
+                path.contains("/error") ||
+                path.contains("/webhook") ||
+                "OPTIONS".equalsIgnoreCase(method);
     }
 
     private String resolveAccessToken(HttpServletRequest req) {

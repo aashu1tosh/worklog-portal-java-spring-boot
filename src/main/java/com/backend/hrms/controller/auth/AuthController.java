@@ -376,6 +376,7 @@ public class AuthController {
         var message = new AuthDTO.ForgotPasswordEmailDTO();
         message.setTo(data.getEmail());
         message.setResetToken(response.getId().toString());
+        message.setWebhookUrl(PropertyUtil.getForgotPasswordWebhookUrl());
 
         System.out.println("Forgot password email: " + message.getTo() + " token: " + message.getResetToken());
         // Send message to RabbitMQ queue

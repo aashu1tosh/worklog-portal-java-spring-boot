@@ -161,6 +161,7 @@ public class AuthDTO {
     public static class ForgotPasswordEmailDTO {
         private String to;
         private String resetToken;
+        private String webhookUrl;
     }
 
     @Getter
